@@ -16,8 +16,8 @@ const WhatsAppButton = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-2 animate-in slide-in-right">
-      <div className="bg-white px-4 py-2 rounded-2xl shadow-soft text-xs font-medium text-dark border border-border-soft relative animate-bounce">
+    <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[40] flex flex-col items-end gap-2 animate-in slide-in-right">
+      <div className="bg-white px-4 py-2 rounded-2xl shadow-soft text-xs font-medium text-dark border border-border-soft relative animate-bounce hidden sm:block">
         ¿Te ayudo con tu pedido?
         <div className="absolute -bottom-2 right-6 w-3 h-3 bg-white border-b border-r border-border-soft transform rotate-45"></div>
       </div>

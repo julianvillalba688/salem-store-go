@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Truck, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MessageCircle, ShoppingCart, ShieldCheck, Truck, ChevronRight, ArrowLeft } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { siteConfig } from '../config';
 import { generateProductWhatsAppMessage, openWhatsApp } from '../utils/whatsapp';
 import { formatPrice } from '../utils/formatters';
+
+const fadeUp = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } } };
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.12 } } };
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -33,7 +37,11 @@ const ProductDetail = () => {
   }, [slug]);
 
   if (loading) {
-    return <div className="min-h-[70vh] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>;
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold"></div>
+      </div>
+    );
   }
 
   if (!product) {
@@ -85,35 +93,43 @@ const ProductDetail = () => {
 
         <div className="bg-white rounded-[2rem] p-4 lg:p-10 shadow-sm border border-[#f2e8e5]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
-            
+
             {/* Imagen del Producto */}
-            <div className="relative aspect-[4/5] bg-[#fcf9f8] rounded-2xl overflow-hidden">
-              <img 
-                src={product.image} 
-                alt={product.name} 
-                fetchpriority="high"
+            <motion.div
+              className="relative aspect-[4/5] bg-[#fcf9f8] rounded-2xl overflow-hidden"
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            >
+              <img
+                src={product.image}
+                alt={product.name}
+                fetchPriority="high"
                 loading="eager"
                 className="w-full h-full object-cover object-center"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=75';
+                }}
               />
               {!isAvailable && (
                 <div className="absolute top-4 left-4 bg-dark text-white text-xs uppercase tracking-widest font-bold px-4 py-2 rounded-full">
                   Agotado temporalmente
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Detalles del Producto */}
-            <div className="flex flex-col">
-              <div className="mb-2">
-                <span className="text-xs uppercase tracking-widest text-primary-500 font-bold bg-primary-50 px-3 py-1 rounded-full">
+            <motion.div className="flex flex-col" variants={stagger} initial="hidden" animate="show">
+              <motion.div variants={fadeUp} className="mb-2">
+                <span className="text-xs uppercase tracking-widest text-gold font-bold bg-gold/10 px-3 py-1 rounded-full">
                   {product.category || 'Accesorios'}
                 </span>
                 {product.sku && <span className="text-xs text-gray-400 ml-3">SKU: {product.sku}</span>}
-              </div>
+              </motion.div>
 
-              <h1 className="text-3xl lg:text-4xl font-serif font-bold text-dark mt-4 mb-4 leading-tight">
+              <motion.h1 variants={fadeUp} className="text-3xl lg:text-4xl font-serif font-bold text-dark mt-4 mb-4 leading-tight">
                 {product.name}
-              </h1>
+              </motion.h1>
 
               <div className="flex items-end gap-3 mb-6 pb-6 border-b border-[#f2e8e5]">
                 {product.isOffer && product.salePrice ? (
@@ -162,7 +178,7 @@ const ProductDetail = () => {
               </div>
 
               {/* Botones de Acción */}
-              <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 mt-auto">
                 <button
                   onClick={handleWhatsApp}
                   disabled={!isAvailable}
@@ -188,8 +204,8 @@ const ProductDetail = () => {
                   <ShoppingCart size={20} />
                   <span className="sm:hidden">Agregar al carrito</span>
                 </button>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>

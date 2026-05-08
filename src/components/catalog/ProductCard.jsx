@@ -23,7 +23,15 @@ const ProductCard = memo(({ product, viewType = 'grid' }) => {
     return (
       <Link to={`/product/${product.slug || product.id}`} className="group flex flex-col sm:flex-row bg-white border border-border-soft rounded-2xl overflow-hidden hover:shadow-soft transition-all duration-300">
         <div className="w-full sm:w-48 aspect-square flex-shrink-0 relative bg-warm overflow-hidden">
-          <img src={product.image} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            loading="lazy" 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            onError={(e) => {
+              e.currentTarget.src = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=500&q=75';
+            }}
+          />
           {hasOffer && <div className="absolute top-2 left-2 bg-accent text-white text-[10px] font-bold px-2 py-1 rounded uppercase">Oferta</div>}
         </div>
         <div className="p-4 flex flex-col justify-between flex-1">
@@ -71,6 +79,9 @@ const ProductCard = memo(({ product, viewType = 'grid' }) => {
           alt={product.name} 
           loading="lazy" 
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" 
+          onError={(e) => {
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=500&q=75';
+          }}
         />
         
         {/* Badges Flotantes */}
