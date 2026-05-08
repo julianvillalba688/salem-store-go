@@ -78,7 +78,7 @@ const Home = () => {
             <div className="order-1 lg:order-2 relative w-full aspect-[4/5] lg:aspect-square max-w-lg mx-auto">
               {/* Carga prioritaria de la imagen LCP sin animación de entrada pesada */}
               <img
-                src="https://images.unsplash.com/photo-1599643478514-4a820cbf31cd?w=800&q=80"
+                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80"
                 alt="Mujer luciendo bisutería fina"
                 fetchpriority="high"
                 loading="eager"

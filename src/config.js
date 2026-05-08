@@ -1,8 +1,8 @@
 export const siteConfig = {
   siteName: "Lumina Accesorios",
   brandName: "Lumina",
-  whatsappNumber: "1234567890", // Reemplazar con el número real sin + o espacios
-  currency: "USD",
+  whatsappNumber: "573046778813",
+  currency: "COP",
   currencySymbol: "$",
   logo: "/logo.png", // Asegurarse de tener un logo en public/
   favicon: "/favicon.png",

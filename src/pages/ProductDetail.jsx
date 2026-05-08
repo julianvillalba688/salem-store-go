@@ -125,10 +125,26 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              <div className="prose prose-sm sm:prose text-gray-600 mb-8">
+              <div className="prose prose-sm sm:prose text-gray-600 mb-6">
                 <p className="whitespace-pre-line leading-relaxed">
                   {product.description || "Una pieza delicada diseñada para resaltar tu estilo en cualquier ocasión. Consulta disponibilidad para más detalles."}
                 </p>
+              </div>
+
+              {/* Atributos Adicionales */}
+              <div className="grid grid-cols-2 gap-4 mb-8 bg-[#fdf8f6] p-4 rounded-xl border border-[#f2e8e5]">
+                {product.material && (
+                  <div>
+                    <span className="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Material / Acabado</span>
+                    <span className="text-sm font-medium text-dark">{product.material}</span>
+                  </div>
+                )}
+                {product.idealFor && (
+                  <div>
+                    <span className="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Recomendación</span>
+                    <span className="text-sm font-medium text-dark">{product.idealFor}</span>
+                  </div>
+                )}
               </div>
 
               {/* Trust Badges */}

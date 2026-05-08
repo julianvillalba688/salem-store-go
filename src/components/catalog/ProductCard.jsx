@@ -84,9 +84,15 @@ const ProductCard = ({ product, priority = false }) => {
           {product.category}
         </div>
         
-        <h3 className="font-serif text-base sm:text-lg text-dark mb-2 line-clamp-2 leading-snug group-hover:text-primary-600 transition-colors">
+        <h3 className="font-serif text-base sm:text-lg text-dark mb-1 line-clamp-2 leading-snug group-hover:text-primary-600 transition-colors">
           {product.name}
         </h3>
+
+        {product.shortDescription && (
+          <p className="text-xs text-gray-500 mb-3 line-clamp-1">
+            {product.shortDescription}
+          </p>
+        )}
         
         <div className="mt-auto pt-2">
           <div className="flex items-center gap-2 mb-4">
