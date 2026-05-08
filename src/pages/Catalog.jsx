@@ -233,20 +233,6 @@ const Catalog = () => {
               </div>
               {/* Scrollable Content */}
               <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                {/* Search */}
-                <div>
-                  <h3 className="font-serif text-lg mb-3 text-dark font-semibold">Buscar</h3>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Buscar joyas..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#eaddd7] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm"
-                    />
-                    <Search className="absolute left-3 top-3 text-primary-400" size={18} />
-                  </div>
-                </div>
                 {/* Category */}
                 <div>
                   <h3 className="font-serif text-lg mb-3 text-dark font-semibold">Categoría</h3>
