@@ -1,42 +1,128 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-[#fcf9f8] text-gray-800 font-sans antialiased;
+  :root {
+    --warm-bg: #FAF7F2;
+    --gold: #C8A96A;
+    --nude: #E8B7B7;
+    --cream: #FDF0E8;
+    --border-soft: #EDE5DF;
+    --dark: #1C1816;
   }
-  
+
+  body {
+    @apply bg-warm text-dark font-sans antialiased;
+    background-color: var(--warm-bg);
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif text-dark;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
 @layer components {
+  /* ── Buttons ── */
   .btn-primary {
-    @apply px-6 py-3 bg-dark text-white rounded-lg font-medium transition-all duration-300 hover:bg-gray-800 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-dark focus:ring-offset-2 flex items-center justify-center gap-2;
+    @apply px-6 py-3 bg-dark text-white rounded-xl font-medium transition-all duration-300 hover:bg-[#2e201b] hover:shadow-soft shadow-sm focus:outline-none focus:ring-2 focus:ring-dark focus:ring-offset-2 flex items-center justify-center gap-2 min-h-[44px];
   }
-  
+
   .btn-outline {
-    @apply px-6 py-3 border-2 border-dark text-dark rounded-lg font-medium transition-all duration-300 hover:bg-dark hover:text-white focus:outline-none focus:ring-2 focus:ring-dark focus:ring-offset-2 flex items-center justify-center gap-2;
+    @apply px-6 py-3 border-2 border-dark text-dark rounded-xl font-medium transition-all duration-300 hover:bg-dark hover:text-white focus:outline-none focus:ring-2 focus:ring-dark focus:ring-offset-2 flex items-center justify-center gap-2 min-h-[44px];
   }
 
   .btn-whatsapp {
-    @apply px-6 py-3 bg-green-500 text-white rounded-lg font-medium transition-all duration-300 hover:bg-green-600 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center gap-2;
+    @apply px-6 py-3 bg-green-500 text-white rounded-xl font-semibold transition-all duration-300 hover:bg-green-600 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center gap-2 min-h-[44px];
   }
 
+  .btn-gold {
+    @apply px-6 py-3 bg-gold text-white rounded-xl font-semibold transition-all duration-300 hover:bg-gold-dark shadow-gold focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 flex items-center justify-center gap-2 min-h-[44px];
+  }
+
+  /* ── Cards ── */
   .glass-effect {
     @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-sm;
   }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-soft;
+  }
+
+  /* ── Typography helpers ── */
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-dark leading-tight;
+  }
+
+  .section-subtitle {
+    @apply text-base md:text-lg text-gray-500 font-light leading-relaxed;
+  }
+
+  /* ── Gold accent text ── */
+  .text-gold {
+    color: var(--gold);
+  }
+
+  /* ── Skeleton loader ── */
+  .skeleton {
+    @apply bg-gray-200 rounded animate-pulse;
+    background: linear-gradient(90deg, #f0ebe8 25%, #e8e0dc 50%, #f0ebe8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  /* ── Divider decorativo ── */
+  .divider-gold {
+    @apply w-16 h-0.5 mx-auto my-4;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
 }
 
-/* Ocultar scrollbar pero permitir scroll */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+@layer utilities {
+  /* Ocultar scrollbar pero permitir scroll */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Animaciones de entrada */
+  .animate-in {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+/* ── Keyframes globales ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+  70%  { box-shadow: 0 0 0 12px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
 }

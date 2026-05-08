@@ -1,19 +1,23 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { SearchX } from 'lucide-react';
 import ProductCard from './ProductCard';
 
 const ProductGrid = ({ products, columnsView = '4', onClear, hasFiltersActive }) => {
-  if (!products || products.length === 0) {
+  if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-[#f2e8e5] shadow-sm text-center px-4">
-        <div className="text-6xl mb-6 opacity-80">💍</div>
-        <h3 className="text-2xl font-serif text-dark font-semibold mb-3">No encontramos productos</h3>
-        <p className="text-gray-500 mb-6 max-w-md">
-          No hay piezas que coincidan con los filtros seleccionados. Intenta ajustar la búsqueda o limpiar los filtros.
+      <div className="flex flex-col items-center justify-center py-20 px-4 text-center bg-white rounded-[2rem] border border-border-soft shadow-sm">
+        <div className="w-20 h-20 bg-warm rounded-full flex items-center justify-center mb-6">
+          <SearchX size={32} className="text-gold" />
+        </div>
+        <h3 className="font-serif text-2xl font-bold text-dark mb-3">No encontramos resultados</h3>
+        <p className="text-gray-500 max-w-md mx-auto mb-8">
+          No hay productos que coincidan con tu búsqueda o los filtros aplicados en este momento.
         </p>
-        {hasFiltersActive && (
+        {(hasFiltersActive || onClear) && (
           <button 
             onClick={onClear}
-            className="px-6 py-2.5 bg-primary-50 text-primary-700 font-bold rounded-xl hover:bg-primary-100 transition-colors"
+            className="btn-outline"
           >
             Limpiar todos los filtros
           </button>
@@ -22,28 +26,49 @@ const ProductGrid = ({ products, columnsView = '4', onClear, hasFiltersActive })
     );
   }
 
-  // Lógica responsiva de columnas
-  let gridClasses = "grid gap-4 sm:gap-6 lg:gap-8 ";
-  
+  // Determinar clases de grid basado en la vista seleccionada
+  let gridClass = "grid gap-4 md:gap-6 lg:gap-8 ";
   if (columnsView === '1') {
-    gridClasses += "grid-cols-1 max-w-md mx-auto";
+    gridClass += "grid-cols-1";
   } else if (columnsView === '2') {
-    gridClasses += "grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto";
+    gridClass += "grid-cols-2";
   } else {
-    // Default: 4 columns in desktop, 2 in tablet, 2 in mobile (never 4 in mobile)
-    gridClasses += "grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
+    // Por defecto 4 columnas en desktop, 2 en mobile
+    gridClass += "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
   }
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  };
+
   return (
-    <div className={gridClasses}>
-      {products.map((product, index) => (
-        <ProductCard 
-          key={product.sku} 
-          product={product} 
-          priority={index < 4} // Eager load the first 4 images
-        />
+    <motion.div 
+      className={gridClass}
+      variants={container}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "100px" }}
+    >
+      {products.map(product => (
+        <motion.div key={product.id} variants={item}>
+          <ProductCard 
+            product={product} 
+            viewType={columnsView === '1' ? 'list' : 'grid'} 
+          />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 };
 

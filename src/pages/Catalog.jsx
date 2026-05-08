@@ -128,13 +128,33 @@ const Catalog = () => {
       
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4 border-b border-[#eaddd7] pb-6">
-          <div>
-            <h1 className="text-4xl font-serif font-bold text-dark mb-2">Colección Exclusiva</h1>
-            <p className="text-primary-600 font-medium tracking-wide">
-              Mostrando {visibleProducts.length} de {filteredProducts.length} piezas
-            </p>
+        {/* Cabecera del catálogo premium */}
+        <div className="bg-white rounded-3xl p-8 md:p-12 mb-8 border border-border-soft shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            <div>
+              <p className="text-gold font-bold tracking-widest uppercase text-xs mb-3">
+                ✦ Colección Completa
+              </p>
+              <h1 className="text-4xl md:text-5xl font-serif font-bold text-dark mb-3">
+                Piezas exclusivas
+              </h1>
+              <p className="text-gray-500 font-light text-lg max-w-md">
+                Explora nuestra selección cuidada de bisutería y encuentra el accesorio perfecto para ti.
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-3 bg-warm px-4 py-2 rounded-xl border border-border-soft">
+              <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+              <p className="text-sm font-medium text-dark">
+                Mostrando <span className="font-bold">{visibleProducts.length}</span> de {filteredProducts.length}
+              </p>
+            </div>
           </div>
+        </div>
+
+        {/* Desktop Controls Bar */}
+        <div className="hidden lg:flex justify-end mb-6">
           
           {/* Desktop Column Selector (hidden on mobile) */}
           <div className="hidden lg:flex items-center bg-white border border-[#eaddd7] rounded-xl p-1 shadow-sm">

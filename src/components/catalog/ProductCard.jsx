@@ -1,143 +1,149 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, MessageCircle, Check } from 'lucide-react';
+import { ShoppingCart, MessageCircle, Star, Sparkles } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { generateProductWhatsAppMessage, openWhatsApp } from '../../utils/whatsapp';
 import { formatPrice } from '../../utils/formatters';
 
-const ProductCard = ({ product, priority = false }) => {
-  const { cart, addToCart } = useCart();
-  const isInCart = cart.some(item => item.sku === product.sku);
-
-  const handleWhatsAppClick = (e) => {
-    e.preventDefault();
-    const message = generateProductWhatsAppMessage(product);
-    openWhatsApp(message, 'whatsapp_click_product');
-  };
+const ProductCard = memo(({ product, viewType = 'grid' }) => {
+  const { addToCart, cart } = useCart();
+  const inCart = cart.some(item => item.id === product.id);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
-    addToCart(product);
+    if (!inCart) {
+      addToCart(product);
+    }
   };
 
+  const hasOffer = product.salePrice && product.salePrice < product.price;
+
+  // Si es list view
+  if (viewType === 'list') {
+    return (
+      <Link to={`/product/${product.id}`} className="group flex flex-col sm:flex-row bg-white border border-border-soft rounded-2xl overflow-hidden hover:shadow-soft transition-all duration-300">
+        <div className="w-full sm:w-48 aspect-square flex-shrink-0 relative bg-warm overflow-hidden">
+          <img src={product.image} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          {hasOffer && <div className="absolute top-2 left-2 bg-accent text-white text-[10px] font-bold px-2 py-1 rounded uppercase">Oferta</div>}
+        </div>
+        <div className="p-4 flex flex-col justify-between flex-1">
+          <div>
+            <p className="text-xs text-gold font-semibold uppercase tracking-wider mb-1">{product.category}</p>
+            <h3 className="font-serif text-lg font-bold text-dark line-clamp-2">{product.name}</h3>
+            <p className="text-sm text-gray-500 mt-2 line-clamp-2">{product.description}</p>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              {hasOffer ? (
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-lg text-accent">{formatPrice(product.salePrice)}</span>
+                  <span className="text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
+                </div>
+              ) : (
+                <span className="font-bold text-lg text-dark">{formatPrice(product.price)}</span>
+              )}
+            </div>
+            <button
+              onClick={handleAddToCart}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors ${inCart ? 'bg-green-100 text-green-700' : 'bg-dark text-white hover:bg-[#2e201b]'}`}
+            >
+              <ShoppingCart size={16} />
+              {inCart ? 'En carrito' : 'Añadir'}
+            </button>
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
+  // Vista Grid / Default (Premium)
   return (
-    <Link 
-      to={`/product/${product.slug}`} 
-      className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-delicate transition-all duration-300 border border-[#f2e8e5]"
-      aria-label={`Ver detalles de ${product.name}`}
-    >
-      <div className="relative aspect-[4/5] overflow-hidden bg-[#fdf8f6]">
-        {/* Etiquetas Elegantes */}
-        <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-          {product.isNew && (
-            <span className="bg-primary-50 text-primary-700 text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full shadow-sm border border-primary-200 backdrop-blur-md">
-              Nuevo
+    <div className="group flex flex-col bg-white border border-border-soft rounded-[1.25rem] overflow-hidden hover:shadow-soft transition-all duration-300">
+      
+      {/* Imagen (Fija aspect-[3/4]) */}
+      <Link to={`/product/${product.id}`} className="relative block aspect-[3/4] bg-warm overflow-hidden">
+        <img 
+          src={product.image} 
+          alt={product.name} 
+          loading="lazy" 
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" 
+        />
+        
+        {/* Badges Flotantes */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          {product.featured && (
+            <span className="bg-white/90 backdrop-blur-sm text-gold-dark text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1 border border-white/50">
+              <Star size={10} fill="currentColor" /> Destacado
             </span>
           )}
-          {product.isOffer && (
-            <span className="bg-accent text-white text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full shadow-sm">
+          {product.isNew && (
+            <span className="bg-gold/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
+              <Sparkles size={10} /> Nuevo
+            </span>
+          )}
+          {hasOffer && (
+            <span className="bg-accent/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-sm">
               Oferta
             </span>
           )}
         </div>
+      </Link>
+
+      {/* Contenido */}
+      <div className="p-4 flex flex-col flex-1 relative bg-white">
         
-        {product.status === 'agotado' && (
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
-            <span className="bg-dark text-white text-xs uppercase tracking-widest font-bold px-4 py-2 rounded-full shadow-lg">
-              Agotado
-            </span>
-          </div>
-        )}
-
-        {/* Imagen Optimizada */}
-        <img
-          src={product.image || 'https://via.placeholder.com/400x500?text=Lumina'}
-          alt={product.name}
-          width="400"
-          height="500"
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
-          loading={priority ? "eager" : "lazy"}
-          fetchpriority={priority ? "high" : "auto"}
-          decoding="async"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = 'https://via.placeholder.com/400x500?text=Imagen+No+Disponible';
-          }}
-        />
-      </div>
-
-      {/* Contenido (Textos, Precios, Mobile CTA) */}
-      <div className="p-3 sm:p-5 flex flex-col flex-grow bg-white">
-        <div className="text-[10px] uppercase tracking-widest text-primary-500 mb-1 font-semibold">
-          {product.category}
-        </div>
-        
-        <h3 className="font-serif text-sm sm:text-base md:text-lg text-dark mb-1 line-clamp-2 leading-tight group-hover:text-primary-600 transition-colors">
-          {product.name}
-        </h3>
-
-        {product.shortDescription && (
-          <p className="hidden sm:block text-xs text-gray-500 mb-3 line-clamp-1">
-            {product.shortDescription}
+        <Link to={`/product/${product.id}`} className="flex-1">
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1.5">
+            {product.category || 'Accesorios'}
           </p>
-        )}
-        
-        <div className="mt-auto pt-2">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            {product.isOffer && product.salePrice ? (
-              <>
-                <span className="text-base sm:text-lg font-bold text-accent">
-                  {formatPrice(product.salePrice)}
-                </span>
-                <span className="text-xs sm:text-sm text-gray-400 line-through">
-                  {formatPrice(product.price)}
-                </span>
-              </>
+          <h3 className="font-serif text-lg font-bold text-dark leading-snug line-clamp-2 mb-2 group-hover:text-gold transition-colors">
+            {product.name}
+          </h3>
+          
+          <div className="mb-4">
+            {hasOffer ? (
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[1.1rem] text-accent">{formatPrice(product.salePrice)}</span>
+                <span className="text-xs text-gray-400 line-through">{formatPrice(product.price)}</span>
+              </div>
             ) : (
-              <span className="text-base sm:text-lg font-bold text-dark">
-                {formatPrice(product.price)}
-              </span>
+              <span className="font-bold text-[1.1rem] text-dark">{formatPrice(product.price)}</span>
             )}
           </div>
-          
-          {/* Botones de acción siempre visibles en móvil */}
-          <div className="flex flex-col gap-2 mt-2">
-            <button
-              onClick={handleAddToCart}
-              disabled={product.status === 'agotado'}
-              className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors min-h-[44px] ${
-                isInCart 
+        </Link>
+
+        {/* Botones de acción siempre visibles en mobile (botones grandes de bloque) */}
+        <div className="mt-auto space-y-2">
+          <button
+            onClick={handleAddToCart}
+            className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors min-h-[44px] ${
+              inCart 
                 ? 'bg-green-50 text-green-700 border border-green-200' 
-                : 'bg-dark text-white hover:bg-primary-900 shadow-sm'
-              }`}
-              aria-label={isInCart ? "Producto en carrito" : "Agregar al carrito"}
-            >
-              {isInCart ? (
-                <>
-                  <Check size={16} />
-                  En carrito
-                </>
-              ) : (
-                <>
-                  <ShoppingCart size={16} />
-                  Añadir al carrito
-                </>
-              )}
-            </button>
-            
-            <button
-              onClick={handleWhatsAppClick}
-              className="w-full bg-primary-50 hover:bg-primary-100 text-primary-800 border border-primary-200 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2 min-h-[44px]"
-              aria-label="Pedir por WhatsApp"
-            >
-              <MessageCircle size={16} className="text-green-600" />
-              Pedir por WhatsApp
-            </button>
-          </div>
+                : 'bg-warm text-dark hover:bg-gold hover:text-white border border-border-soft'
+            }`}
+          >
+            <ShoppingCart size={16} />
+            {inCart ? 'En carrito' : 'Añadir al carrito'}
+          </button>
+          
+          <a
+            href={`https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(`Hola, me interesa el producto: ${product.name} (${hasOffer ? formatPrice(product.salePrice) : formatPrice(product.price)}).`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-2.5 bg-dark text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#2e201b] transition-colors min-h-[44px]"
+            onClick={(e) => {
+              import('../../utils/whatsapp').then(({ trackWhatsAppClick }) => {
+                trackWhatsAppClick('whatsapp_click_product', product);
+              });
+            }}
+          >
+            <MessageCircle size={16} className="text-green-400" />
+            Pedir por WhatsApp
+          </a>
         </div>
+
       </div>
-    </Link>
+    </div>
   );
-};
+});
 
 export default ProductCard;
