@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Filter } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import ProductGrid from '../components/catalog/ProductGrid';
 import ProductFilters from '../components/catalog/ProductFilters';
 import PromoBanner from '../components/ui/PromoBanner';
+import { siteConfig } from '../config';
 
 const Catalog = () => {
   const [products, setProducts] = useState([]);
@@ -23,12 +25,7 @@ const Catalog = () => {
           const data = await response.json();
           setProducts(data);
         } else {
-          setProducts([
-            { sku: '1', name: 'Collar Perlas de Río', price: 120, image: 'https://images.unsplash.com/photo-1599643478514-4a820cbf31cd?w=500&q=80', slug: 'collar-perlas', category: 'Collares', featured: true, isNew: true },
-            { sku: '2', name: 'Anillo Diamante Sintético', price: 85, salePrice: 70, isOffer: true, image: 'https://images.unsplash.com/photo-1605100804763-247f67b2548e?w=500&q=80', slug: 'anillo-diamante', category: 'Anillos', featured: false },
-            { sku: '3', name: 'Pulsera Oro Rosa', price: 250, image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=500&q=80', slug: 'pulsera-oro', category: 'Pulseras', featured: true },
-            { sku: '4', name: 'Pendientes Gota de Cristal', price: 45, image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=500&q=80', slug: 'pendientes-gota', category: 'Pendientes', featured: false },
-          ]);
+          setProducts([]);
         }
       } catch (error) {
         console.error('Error cargando productos:', error);
@@ -88,6 +85,11 @@ const Catalog = () => {
 
   return (
     <div className="bg-[#fcf9f8] min-h-screen pt-10 pb-24">
+      <Helmet>
+        <title>Colección Completa | {siteConfig.siteName}</title>
+        <meta name="description" content="Explora nuestro catálogo de bisutería y accesorios. Encuentra aretes, collares, pulseras y sets exclusivos." />
+      </Helmet>
+      
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4 border-b border-[#eaddd7] pb-8">

@@ -1,196 +1,180 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ShoppingCart, MessageCircle, ArrowLeft, Check, ShieldCheck } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { MessageCircle, ShoppingCart, ArrowLeft, ShieldCheck, Truck, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { generateProductWhatsAppMessage, openWhatsApp } from '../utils/whatsapp';
 import { siteConfig } from '../config';
+import { generateProductWhatsAppMessage, openWhatsApp } from '../utils/whatsapp';
 
 const ProductDetail = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mainImage, setMainImage] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
 
   useEffect(() => {
-    const loadProduct = async () => {
+    const fetchProduct = async () => {
       try {
         const response = await fetch('/data/products.json');
-        let foundProduct = null;
         if (response.ok) {
           const data = await response.json();
-          foundProduct = data.find(p => p.slug === slug);
-        } else {
-          // Fallback
-          const dummyData = [
-            { sku: '1', name: 'Auriculares Premium', description: 'Experimenta un sonido envolvente de alta calidad. Diseño ergonómico, batería de larga duración y cancelación de ruido activa.', price: 120, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80', gallery: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80', 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80'], slug: 'auriculares', category: 'Electrónica', stock: 10, status: 'disponible' }
-          ];
-          foundProduct = dummyData.find(p => p.slug === slug) || dummyData[0];
-        }
-        
-        if (foundProduct) {
-          setProduct(foundProduct);
-          setMainImage(foundProduct.image);
+          const found = data.find(p => p.slug === slug);
+          setProduct(found);
         }
       } catch (error) {
-        console.error('Error cargando producto:', error);
+        console.error('Error fetching product:', error);
       } finally {
         setLoading(false);
       }
     };
-    loadProduct();
+    fetchProduct();
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    );
+    return <div className="min-h-[70vh] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>;
   }
 
   if (!product) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <h2 className="text-3xl font-bold mb-4">Producto no encontrado</h2>
-        <p className="text-gray-500 mb-8">El producto que buscas no existe o ha sido eliminado.</p>
-        <Link to="/catalog" className="btn-primary">Volver al catálogo</Link>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+        <h2 className="text-3xl font-serif text-dark mb-4">Pieza no encontrada</h2>
+        <p className="text-gray-500 mb-8">Lo sentimos, esta joya ya no está disponible en nuestro catálogo.</p>
+        <Link to="/catalog" className="bg-dark text-white px-8 py-3 rounded-full font-medium hover:bg-primary-900 transition-colors">Volver a la colección</Link>
       </div>
     );
   }
 
-  const handleAddToCart = () => {
-    addToCart(product, quantity);
-  };
-
   const handleWhatsApp = () => {
-    const message = generateProductWhatsAppMessage(product);
-    openWhatsApp(message);
+    openWhatsApp(generateProductWhatsAppMessage(product));
+    if (window.dataLayer) {
+      window.dataLayer.push({ event: 'click_whatsapp_product_detail', product: product.name });
+    }
   };
 
-  const isOutOfStock = product.status === 'agotado';
+  const isAvailable = product.status !== 'agotado';
+
+  // Breadcrumbs Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio", "item": siteConfig.url },
+      { "@type": "ListItem", "position": 2, "name": "Catálogo", "item": `${siteConfig.url}/catalog` },
+      { "@type": "ListItem", "position": 3, "name": product.category || "Producto", "item": `${siteConfig.url}/catalog` },
+      { "@type": "ListItem", "position": 4, "name": product.name, "item": `${siteConfig.url}/product/${product.slug}` }
+    ]
+  };
 
   return (
-    <div className="bg-white min-h-screen pt-10 pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link to="/catalog" className="inline-flex items-center gap-2 text-gray-500 hover:text-dark font-medium mb-8 transition-colors">
-          <ArrowLeft size={20} />
-          Volver al catálogo
-        </Link>
+    <div className="bg-[#fcf9f8] min-h-screen py-10">
+      <Helmet>
+        <title>{product.name} | {siteConfig.siteName}</title>
+        <meta name="description" content={product.description || `Compra ${product.name} en ${siteConfig.siteName}. Bisutería fina por WhatsApp.`} />
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+      </Helmet>
 
-        <div className="bg-white rounded-3xl p-6 lg:p-12 shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-12">
-          
-          {/* Gallery */}
-          <div className="w-full lg:w-1/2 flex flex-col-reverse lg:flex-row gap-4">
-            <div className="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto no-scrollbar py-2 lg:w-24 flex-shrink-0">
-              {product.image && (
-                <button
-                  onClick={() => setMainImage(product.image)}
-                  className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all ${mainImage === product.image ? 'border-primary-500 shadow-md' : 'border-transparent hover:border-gray-200 opacity-70 hover:opacity-100'}`}
-                >
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                </button>
-              )}
-              {product.gallery && product.gallery.map((img, index) => (
-                <button
-                  key={index}
-                  onClick={() => setMainImage(img)}
-                  className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all ${mainImage === img ? 'border-primary-500 shadow-md' : 'border-transparent hover:border-gray-200 opacity-70 hover:opacity-100'}`}
-                >
-                  <img src={img} alt={`${product.name} ${index + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
-            
-            <motion.div 
-              key={mainImage}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="flex-1 bg-gray-50 rounded-2xl overflow-hidden aspect-square lg:aspect-[4/5] relative"
-            >
-              <img src={mainImage} alt={product.name} className="w-full h-full object-cover object-center" />
-              {product.isNew && (
-                <span className="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">NUEVO</span>
-              )}
-            </motion.div>
-          </div>
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Breadcrumbs */}
+        <nav className="flex items-center text-sm text-gray-500 mb-8 font-medium">
+          <Link to="/" className="hover:text-dark">Inicio</Link>
+          <ChevronRight size={14} className="mx-2 text-gray-300" />
+          <Link to="/catalog" className="hover:text-dark">Colección</Link>
+          <ChevronRight size={14} className="mx-2 text-gray-300" />
+          <span className="text-dark truncate">{product.name}</span>
+        </nav>
 
-          {/* Info */}
-          <div className="w-full lg:w-1/2 flex flex-col">
-            <div className="mb-2">
-              <span className="text-sm font-medium text-primary-600 tracking-wider uppercase">{product.category}</span>
-            </div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-dark mb-4 leading-tight">{product.name}</h1>
+        <div className="bg-white rounded-[2rem] p-4 lg:p-10 shadow-sm border border-[#f2e8e5]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
             
-            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
-              <div className="flex items-baseline gap-2">
+            {/* Imagen del Producto */}
+            <div className="relative aspect-[4/5] bg-[#fcf9f8] rounded-2xl overflow-hidden">
+              <img 
+                src={product.image} 
+                alt={product.name} 
+                fetchpriority="high"
+                loading="eager"
+                className="w-full h-full object-cover object-center"
+              />
+              {!isAvailable && (
+                <div className="absolute top-4 left-4 bg-dark text-white text-xs uppercase tracking-widest font-bold px-4 py-2 rounded-full">
+                  Agotado temporalmente
+                </div>
+              )}
+            </div>
+
+            {/* Detalles del Producto */}
+            <div className="flex flex-col">
+              <div className="mb-2">
+                <span className="text-xs uppercase tracking-widest text-primary-500 font-bold bg-primary-50 px-3 py-1 rounded-full">
+                  {product.category || 'Accesorios'}
+                </span>
+                {product.sku && <span className="text-xs text-gray-400 ml-3">SKU: {product.sku}</span>}
+              </div>
+
+              <h1 className="text-3xl lg:text-4xl font-serif font-bold text-dark mt-4 mb-4 leading-tight">
+                {product.name}
+              </h1>
+
+              <div className="flex items-end gap-3 mb-6 pb-6 border-b border-[#f2e8e5]">
                 {product.isOffer && product.salePrice ? (
                   <>
-                    <span className="text-3xl font-bold text-red-600">{siteConfig.currencySymbol}{product.salePrice}</span>
-                    <span className="text-xl text-gray-400 line-through">{siteConfig.currencySymbol}{product.price}</span>
+                    <span className="text-3xl font-bold text-accent">{siteConfig.currencySymbol}{product.salePrice}</span>
+                    <span className="text-xl text-gray-400 line-through mb-1">{siteConfig.currencySymbol}{product.price}</span>
                   </>
                 ) : (
-                  <span className="text-3xl font-bold text-gray-900">{siteConfig.currencySymbol}{product.price}</span>
+                  <span className="text-3xl font-bold text-dark">{siteConfig.currencySymbol}{product.price}</span>
                 )}
               </div>
-              <div className="h-6 w-px bg-gray-200"></div>
-              <span className="text-sm text-gray-500">SKU: {product.sku}</span>
-            </div>
 
-            <p className="text-gray-600 text-lg leading-relaxed mb-8">{product.description}</p>
-
-            <div className="space-y-4 mb-8 bg-gray-50 p-6 rounded-2xl">
-              <div className="flex items-center gap-3 text-gray-700">
-                <Check className="text-green-500" size={20} />
-                <span>Estado: <strong className={isOutOfStock ? 'text-red-500' : 'text-green-600'}>
-                  {isOutOfStock ? 'Agotado' : 'Disponible'}
-                </strong></span>
+              <div className="prose prose-sm sm:prose text-gray-600 mb-8">
+                <p className="whitespace-pre-line leading-relaxed">
+                  {product.description || "Una pieza delicada diseñada para resaltar tu estilo en cualquier ocasión. Consulta disponibilidad para más detalles."}
+                </p>
               </div>
-              <div className="flex items-center gap-3 text-gray-700">
-                <ShieldCheck className="text-blue-500" size={20} />
-                <span>Compra segura, coordinación directa por WhatsApp</span>
-              </div>
-            </div>
 
-            <div className="mt-auto pt-6 border-t border-gray-100 space-y-4">
-              <div className="flex gap-4 mb-4">
-                <div className="w-1/3 border border-gray-200 rounded-xl flex items-center justify-between p-2">
-                  <button 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    -
-                  </button>
-                  <span className="font-semibold">{quantity}</span>
-                  <button 
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    +
-                  </button>
+              {/* Trust Badges */}
+              <div className="flex flex-col gap-3 mb-8 bg-[#fcf9f8] p-5 rounded-xl border border-[#f2e8e5]">
+                <div className="flex items-center gap-3 text-sm text-dark font-medium">
+                  <ShieldCheck size={20} className="text-green-600" />
+                  Compra segura por WhatsApp
                 </div>
-                <button 
-                  onClick={handleAddToCart}
-                  disabled={isOutOfStock}
-                  className="w-2/3 btn-primary text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                <div className="flex items-center gap-3 text-sm text-dark font-medium">
+                  <Truck size={20} className="text-primary-500" />
+                  Envíos a domicilio coordinados
+                </div>
+              </div>
+
+              {/* Botones de Acción */}
+              <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+                <button
+                  onClick={handleWhatsApp}
+                  disabled={!isAvailable}
+                  className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold text-sm lg:text-base transition-all shadow-md ${
+                    isAvailable 
+                      ? 'bg-green-500 hover:bg-green-600 text-white' 
+                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
                 >
-                  <ShoppingCart size={22} />
-                  Agregar al Carrito
+                  <MessageCircle size={20} />
+                  {isAvailable ? 'Comprar por WhatsApp' : 'Consultar reposición'}
+                </button>
+                
+                <button
+                  onClick={() => addToCart(product)}
+                  disabled={!isAvailable}
+                  className={`sm:w-auto flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold transition-all border-2 ${
+                    isAvailable
+                      ? 'border-dark text-dark hover:bg-dark hover:text-white'
+                      : 'border-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <ShoppingCart size={20} />
+                  <span className="sm:hidden">Agregar al carrito</span>
                 </button>
               </div>
-
-              <button 
-                onClick={handleWhatsApp}
-                className="w-full btn-whatsapp text-lg"
-              >
-                <MessageCircle size={22} />
-                Consultar por WhatsApp
-              </button>
             </div>
-
           </div>
         </div>
       </div>

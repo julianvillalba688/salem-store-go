@@ -1,26 +1,52 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { Layout } from './components/layout/Layout';
 import Home from './pages/Home';
-import Catalog from './pages/Catalog';
-import ProductDetail from './pages/ProductDetail';
-import AdminImport from './pages/AdminImport';
 import { CartProvider } from './context/CartContext';
+
+// Lazy load secondary routes to improve initial load performance
+const Catalog = React.lazy(() => import('./pages/Catalog'));
+const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
+const AdminImport = React.lazy(() => import('./pages/AdminImport'));
 
 function App() {
   return (
-    <BrowserRouter>
-      <CartProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="catalog" element={<Catalog />} />
-            <Route path="product/:slug" element={<ProductDetail />} />
-            <Route path="admin-import" element={<AdminImport />} />
-          </Route>
-        </Routes>
-      </CartProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <CartProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route 
+                path="catalog" 
+                element={
+                  <Suspense fallback={<div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>}>
+                    <Catalog />
+                  </Suspense>
+                } 
+              />
+              <Route 
+                path="product/:slug" 
+                element={
+                  <Suspense fallback={<div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>}>
+                    <ProductDetail />
+                  </Suspense>
+                } 
+              />
+              <Route 
+                path="admin-import" 
+                element={
+                  <Suspense fallback={<div>Cargando administrador...</div>}>
+                    <AdminImport />
+                  </Suspense>
+                } 
+              />
+            </Route>
+          </Routes>
+        </CartProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 
