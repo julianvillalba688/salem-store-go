@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Filter, LayoutGrid, Rows3, Columns4, Search } from 'lucide-react';
+import { Filter, LayoutGrid, Rows3, Columns4, Search, X, ChevronDown } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import ProductGrid from '../components/catalog/ProductGrid';
 import ProductFilters from '../components/catalog/ProductFilters';
@@ -210,9 +210,128 @@ const Catalog = () => {
           )}
         </div>
 
+        {/* Mobile Filter Drawer — always mounted, shown via isMobileFiltersOpen */}
+        {isMobileFiltersOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filtros">
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsMobileFiltersOpen(false)}
+            />
+            {/* Drawer Panel */}
+            <div className="absolute right-0 top-0 bottom-0 w-4/5 max-w-sm bg-[#fcf9f8] shadow-2xl flex flex-col overflow-hidden">
+              {/* Header */}
+              <div className="flex justify-between items-center p-6 pb-4 border-b border-[#eaddd7] flex-shrink-0">
+                <h2 className="text-2xl font-serif font-bold text-dark">Filtros</h2>
+                <button 
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                  className="p-2 text-primary-500 hover:bg-primary-50 rounded-full transition-colors"
+                  aria-label="Cerrar filtros"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                {/* Search */}
+                <div>
+                  <h3 className="font-serif text-lg mb-3 text-dark font-semibold">Buscar</h3>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Buscar joyas..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#eaddd7] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm"
+                    />
+                    <Search className="absolute left-3 top-3 text-primary-400" size={18} />
+                  </div>
+                </div>
+                {/* Category */}
+                <div>
+                  <h3 className="font-serif text-lg mb-3 text-dark font-semibold">Categoría</h3>
+                  <div className="relative">
+                    <select
+                      value={activeCategory}
+                      onChange={(e) => setActiveCategory(e.target.value)}
+                      className="w-full pl-4 pr-10 py-2.5 bg-white border border-[#eaddd7] rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm text-gray-700"
+                    >
+                      <option value="">Todas las categorías</option>
+                      {categories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-3 text-primary-400 pointer-events-none" size={18} />
+                  </div>
+                </div>
+                {/* Price Range */}
+                <div>
+                  <h3 className="font-serif text-lg mb-3 text-dark font-semibold">Rango de Precio</h3>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-2.5 text-gray-400">$</span>
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        className="w-full pl-7 pr-2 py-2.5 bg-white border border-[#eaddd7] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm text-sm"
+                      />
+                    </div>
+                    <span className="text-gray-400">–</span>
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-2.5 text-gray-400">$</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        className="w-full pl-7 pr-2 py-2.5 bg-white border border-[#eaddd7] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Sort */}
+                <div>
+                  <h3 className="font-serif text-lg mb-3 text-dark font-semibold">Ordenar por</h3>
+                  <div className="relative">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="w-full pl-4 pr-10 py-2.5 bg-white border border-[#eaddd7] rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm text-gray-700"
+                    >
+                      <option value="featured">Destacados</option>
+                      <option value="newest">Más recientes</option>
+                      <option value="price-low">Precio: Menor a Mayor</option>
+                      <option value="price-high">Precio: Mayor a Menor</option>
+                      <option value="name-asc">Nombre: A - Z</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-3 text-primary-400 pointer-events-none" size={18} />
+                  </div>
+                </div>
+              </div>
+              {/* Footer Buttons */}
+              <div className="p-6 pt-4 border-t border-[#eaddd7] flex-shrink-0 space-y-3">
+                <button
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                  className="w-full bg-dark text-white py-3.5 rounded-xl font-bold hover:bg-primary-900 transition-colors shadow-md min-h-[44px]"
+                >
+                  Ver {filteredProducts.length} productos
+                </button>
+                <button
+                  onClick={() => { handleClearFilters(); setIsMobileFiltersOpen(false); }}
+                  className="w-full py-3 text-primary-600 font-medium hover:bg-primary-50 rounded-xl transition-colors border border-primary-200 min-h-[44px]"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row gap-8 xl:gap-12">
           
-          {/* Left Sidebar: Filters + Promo */}
+          {/* Left Sidebar: Filters + Promo — Desktop only */}
           <div className="hidden lg:block w-64 flex-shrink-0 space-y-8">
             <ProductFilters 
               categories={categories}
@@ -226,7 +345,7 @@ const Catalog = () => {
               setMinPrice={setMinPrice}
               maxPrice={maxPrice}
               setMaxPrice={setMaxPrice}
-              isMobileFiltersOpen={isMobileFiltersOpen}
+              isMobileFiltersOpen={false}
               setIsMobileFiltersOpen={setIsMobileFiltersOpen}
               onClear={handleClearFilters}
             />
