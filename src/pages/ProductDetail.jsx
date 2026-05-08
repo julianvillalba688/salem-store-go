@@ -20,7 +20,7 @@ const ProductDetail = () => {
         const response = await fetch('/data/products.json');
         if (response.ok) {
           const data = await response.json();
-          const found = data.find(p => p.slug === slug);
+          const found = data.find(p => p.slug === slug || String(p.id) === slug);
           setProduct(found);
         }
       } catch (error) {

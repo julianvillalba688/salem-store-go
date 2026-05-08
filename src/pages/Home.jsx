@@ -19,10 +19,10 @@ const stagger = {
 };
 
 const CATEGORIES = [
-  { name: 'Aretes', slug: 'aretes', img: 'https://images.unsplash.com/photo-1573408301185-9519f94815ac?w=500&q=75' },
-  { name: 'Collares', slug: 'collares', img: 'https://images.unsplash.com/photo-1611085583191-a3b181a88401?w=500&q=75' },
-  { name: 'Pulseras', slug: 'pulseras', img: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500&q=75' },
-  { name: 'Sets', slug: 'sets', img: 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=500&q=75' },
+  { name: 'Aretes', slug: 'aretes', img: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=500&q=75' },
+  { name: 'Collares', slug: 'collares', img: 'https://images.unsplash.com/photo-1599643478524-fb66f7ca065b?auto=format&fit=crop&w=500&q=75' },
+  { name: 'Pulseras', slug: 'pulseras', img: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=500&q=75' },
+  { name: 'Sets', slug: 'sets', img: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=500&q=75' },
 ];
 
 const TESTIMONIALS = [
@@ -150,7 +150,17 @@ const Home = () => {
             {CATEGORIES.map((cat) => (
               <motion.div key={cat.slug} variants={fadeUp}>
                 <Link to={`/catalog?category=${cat.slug}`} className="group relative block rounded-2xl overflow-hidden aspect-[3/4] shadow-sm card-hover">
-                  <img src={cat.img} alt={cat.name} loading="lazy" width="400" height="533" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <img 
+                    src={cat.img} 
+                    alt={`Colección de ${cat.name}`} 
+                    loading="lazy" 
+                    width="400" 
+                    height="533" 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=500&q=75';
+                    }}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
                   <div className="absolute bottom-0 left-0 right-0 p-5">
                     <p className="text-white font-serif text-xl font-bold">{cat.name}</p>

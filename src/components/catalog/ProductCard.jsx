@@ -21,7 +21,7 @@ const ProductCard = memo(({ product, viewType = 'grid' }) => {
   // Si es list view
   if (viewType === 'list') {
     return (
-      <Link to={`/product/${product.id}`} className="group flex flex-col sm:flex-row bg-white border border-border-soft rounded-2xl overflow-hidden hover:shadow-soft transition-all duration-300">
+      <Link to={`/product/${product.slug || product.id}`} className="group flex flex-col sm:flex-row bg-white border border-border-soft rounded-2xl overflow-hidden hover:shadow-soft transition-all duration-300">
         <div className="w-full sm:w-48 aspect-square flex-shrink-0 relative bg-warm overflow-hidden">
           <img src={product.image} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           {hasOffer && <div className="absolute top-2 left-2 bg-accent text-white text-[10px] font-bold px-2 py-1 rounded uppercase">Oferta</div>}
@@ -44,7 +44,11 @@ const ProductCard = memo(({ product, viewType = 'grid' }) => {
               )}
             </div>
             <button
-              onClick={handleAddToCart}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleAddToCart(e);
+              }}
               className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors ${inCart ? 'bg-green-100 text-green-700' : 'bg-dark text-white hover:bg-[#2e201b]'}`}
             >
               <ShoppingCart size={16} />
@@ -61,7 +65,7 @@ const ProductCard = memo(({ product, viewType = 'grid' }) => {
     <div className="group flex flex-col bg-white border border-border-soft rounded-[1.25rem] overflow-hidden hover:shadow-soft transition-all duration-300">
       
       {/* Imagen (Fija aspect-[3/4]) */}
-      <Link to={`/product/${product.id}`} className="relative block aspect-[3/4] bg-warm overflow-hidden">
+      <Link to={`/product/${product.slug || product.id}`} className="relative block aspect-[3/4] bg-warm overflow-hidden">
         <img 
           src={product.image} 
           alt={product.name} 
@@ -92,7 +96,7 @@ const ProductCard = memo(({ product, viewType = 'grid' }) => {
       {/* Contenido */}
       <div className="p-4 flex flex-col flex-1 relative bg-white">
         
-        <Link to={`/product/${product.id}`} className="flex-1">
+        <Link to={`/product/${product.slug || product.id}`} className="flex-1">
           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1.5">
             {product.category || 'Accesorios'}
           </p>
@@ -115,7 +119,11 @@ const ProductCard = memo(({ product, viewType = 'grid' }) => {
         {/* Botones de acción siempre visibles en mobile (botones grandes de bloque) */}
         <div className="mt-auto space-y-2">
           <button
-            onClick={handleAddToCart}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddToCart(e);
+            }}
             className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors min-h-[44px] ${
               inCart 
                 ? 'bg-green-50 text-green-700 border border-green-200' 
@@ -132,8 +140,9 @@ const ProductCard = memo(({ product, viewType = 'grid' }) => {
             rel="noopener noreferrer"
             className="w-full py-2.5 bg-dark text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#2e201b] transition-colors min-h-[44px]"
             onClick={(e) => {
+              e.stopPropagation();
               import('../../utils/whatsapp').then(({ trackWhatsAppClick }) => {
-                trackWhatsAppClick('whatsapp_click_product', product);
+                if (trackWhatsAppClick) trackWhatsAppClick('whatsapp_click_product', product);
               });
             }}
           >
