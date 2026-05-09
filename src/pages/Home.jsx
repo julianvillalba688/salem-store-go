@@ -55,6 +55,12 @@ const EDITORIAL = [
   { label:'Para regalar', text:'El regalo que siempre acierta: bisutería con alma.', img: HOME_MEDIA.editorial.regalar },
 ];
 
+const TESTIMONIALS = [
+  { name:'Carolina M.', stars:5, text:'Mis aretes llegaron perfectos y en tiempo récord. La atención por WhatsApp fue súper rápida.' },
+  { name:'Valentina R.', stars:5, text:'Compré un set de collar y pulsera para mi mamá. Quedó encantada. La calidad se nota.' },
+  { name:'Daniela P.', stars:5, text:'Me encanta que puedo ver todo el catálogo y pedir directamente. Muy cómodo y confiable.' },
+];
+
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -380,7 +386,7 @@ const Home = () => {
 
           <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-6"
             variants={stagger} initial="hidden" whileInView="show" viewport={{once:true,margin:'-60px'}}>
-            {TESTIMONIALS.map((t,i) => (
+            {Array.isArray(TESTIMONIALS) && TESTIMONIALS.map((t,i) => (
               <motion.div key={i} variants={fadeUp}
                 className="bg-section-warm rounded-3xl p-7 border border-border-soft relative overflow-hidden card-hover">
                 {/* Big quote decoration */}
