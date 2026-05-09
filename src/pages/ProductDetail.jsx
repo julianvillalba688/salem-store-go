@@ -150,20 +150,45 @@ const ProductDetail = () => {
               </div>
 
               {/* Atributos Adicionales */}
-              <div className="grid grid-cols-2 gap-4 mb-8 bg-[#fdf8f6] p-4 rounded-xl border border-[#f2e8e5]">
-                {product.material && (
-                  <div>
-                    <span className="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Material / Acabado</span>
-                    <span className="text-sm font-medium text-dark">{product.material}</span>
+              {(() => {
+                const category = product.category || '';
+                const name = product.name || '';
+                const desc = product.description || '';
+                
+                // Fallback de Material
+                const materialFallback = (name.toLowerCase().includes('18k') || desc.toLowerCase().includes('18k')) 
+                  ? 'Oro laminado 18K' 
+                  : (category === 'Juegos' || category === 'Sets') 
+                    ? 'Acabado de bisutería fina' 
+                    : 'Acabado de bisutería fina';
+                
+                const displayMaterial = product.material || materialFallback;
+
+                // Fallback de Recomendación
+                let recommendationFallback = 'Uso diario o regalo especial';
+                if (category.includes('Arete')) recommendationFallback = 'Uso diario o regalo especial';
+                else if (category.includes('Anillo')) recommendationFallback = 'Perfecto para combinar o regalar';
+                else if (['Collares', 'Cadenas Y Collar', 'Gargantillas'].includes(category)) recommendationFallback = 'Ideal para elevar looks diarios';
+                else if (category.includes('Pulsera')) recommendationFallback = 'Perfecta para combinar en capas';
+                else if (category.includes('Tobillera')) recommendationFallback = 'Ideal para looks frescos y delicados';
+                else if (category.includes('Dije')) recommendationFallback = 'Perfecto para personalizar cadenas';
+                else if (['Juegos', 'Sets'].includes(category)) recommendationFallback = 'Set coordinado para regalo o uso especial';
+
+                const displayRecommendation = product.idealFor || recommendationFallback;
+
+                return (
+                  <div className="grid grid-cols-2 gap-4 mb-8 bg-[#fdf8f6] p-4 rounded-xl border border-[#f2e8e5]">
+                    <div>
+                      <span className="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Material / Acabado</span>
+                      <span className="text-sm font-medium text-dark">{displayMaterial}</span>
+                    </div>
+                    <div>
+                      <span className="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Recomendación</span>
+                      <span className="text-sm font-medium text-dark">{displayRecommendation}</span>
+                    </div>
                   </div>
-                )}
-                {product.idealFor && (
-                  <div>
-                    <span className="block text-xs uppercase tracking-wider text-gray-400 font-bold mb-1">Recomendación</span>
-                    <span className="text-sm font-medium text-dark">{product.idealFor}</span>
-                  </div>
-                )}
-              </div>
+                );
+              })()}
 
               {/* Trust Badges */}
               <div className="flex flex-col gap-3 mb-8 bg-[#fcf9f8] p-5 rounded-xl border border-[#f2e8e5]">
