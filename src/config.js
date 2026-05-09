@@ -2,7 +2,7 @@ export const BRAND = {
   name: "Salem Store",
   displayName: "SALEM STORE",
   slogan: "Detalles que marcan la diferencia",
-  logo: "/og-image.png",
+  logo: "/logo_salem_icon.png",
   icon: "/logo_salem_icon.png",
   favicon: "/favicon.svg",
   ogImage: "/og-image.png",

@@ -26,8 +26,11 @@ export const Layout = () => {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14">
             {/* Logo */}
-            <Link to="/" className="flex items-center group h-14" aria-label="Salem Store - Inicio">
-              <img src={siteConfig.logo} alt={siteConfig.siteName} className="h-10 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+            <Link to="/" className="flex items-center gap-3 group h-14" aria-label="Salem Store - Inicio">
+              <div className="relative h-10 md:h-12 w-10 md:w-12 flex items-center justify-center overflow-hidden rounded-lg">
+                <img src={siteConfig.logo} alt="" className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110 mix-blend-multiply" />
+              </div>
+              <span className="font-serif font-bold text-xl md:text-2xl tracking-[0.2em] text-[#1C1816] uppercase">Salem Store</span>
             </Link>
 
             {/* Desktop Nav */}
@@ -99,8 +102,11 @@ export const Layout = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-10 border-b border-white/10">
             {/* Brand */}
             <div className="md:col-span-2">
-              <div className="mb-5">
-                <img src={siteConfig.logo} alt={siteConfig.siteName} className="h-12 md:h-16 w-auto object-contain" />
+              <div className="flex items-center gap-4 mb-6">
+                <div className="relative h-14 w-14 flex items-center justify-center overflow-hidden rounded-xl bg-white/5 p-1">
+                  <img src={siteConfig.logo} alt="" className="h-full w-full object-contain invert mix-blend-screen" />
+                </div>
+                <span className="font-serif font-bold text-2xl tracking-[0.15em] text-white uppercase">Salem Store</span>
               </div>
               <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm">
                 Piezas exclusivas que resaltan tu belleza natural. Atención personalizada y envíos seguros. Tu estilo, nuestro arte.
