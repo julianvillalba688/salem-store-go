@@ -19,7 +19,8 @@ const getProductBadge = (product) => {
 
 const ProductCard = memo(({ product, viewType = 'grid' }) => {
   const { addToCart, cart } = useCart();
-  const inCart = cart.some(item => item.id === product.id);
+  const productId = product.id || product.sku;
+  const inCart = cart.some(item => (item.id || item.sku) === productId);
   const badge = getProductBadge(product);
 
   const handleAddToCart = (e) => {

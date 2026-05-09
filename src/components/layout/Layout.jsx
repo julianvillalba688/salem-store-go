@@ -39,7 +39,11 @@ export const Layout = () => {
               <Link to="/catalog" className={`text-xs font-semibold tracking-[0.12em] uppercase transition-colors ${location.pathname==='/catalog' ? 'text-gold' : 'text-gray-500 hover:text-dark'}`}>Colección</Link>
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
+              <Link to="/catalog" className="md:hidden flex items-center px-3 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider text-dark bg-warm hover:bg-gold/10 transition-colors border border-border-soft">
+                Catálogo
+              </Link>
+              
               <a href={`https://wa.me/${siteConfig.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-50 hover:bg-green-100 transition-colors">
                 <MessageCircle size={14}/> Contacto
               </a>
@@ -53,9 +57,9 @@ export const Layout = () => {
                   </span>
                 )}
               </button>
-              <button className="md:hidden p-2.5 text-dark hover:bg-warm rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              <button className="md:hidden p-2 text-dark hover:bg-warm rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Menú principal">
-                {isMobileMenuOpen ? <X size={22}/> : <Menu size={22}/>}
+                {isMobileMenuOpen ? <X size={20}/> : <Menu size={20}/>}
               </button>
             </div>
           </div>

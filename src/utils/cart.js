@@ -5,7 +5,14 @@ export const calculateSubtotal = (price, quantity) => {
 };
 
 export const calculateTotal = (cart) => {
+  if (!Array.isArray(cart)) return 0;
   return cart.reduce((total, item) => {
-    return total + calculateSubtotal(item.price, item.quantity);
+    const price = typeof item.price === 'string' 
+      ? Number(item.price.replace(/[^\d.]/g, "")) 
+      : Number(item.price);
+    const qty = Number(item.quantity) || 0;
+    
+    if (isNaN(price)) return total;
+    return total + (price * qty);
   }, 0);
 };

@@ -7,8 +7,14 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem('whatsapp_cart');
-    return savedCart ? JSON.parse(savedCart) : [];
+    try {
+      const savedCart = localStorage.getItem('whatsapp_cart');
+      const parsed = savedCart ? JSON.parse(savedCart) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      console.error('Error parsing cart from localStorage:', e);
+      return [];
+    }
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -17,32 +23,53 @@ export const CartProvider = ({ children }) => {
   }, [cart]);
 
   const addToCart = (product, quantity = 1) => {
+    if (!product || (!product.id && !product.sku)) return;
+
     setCart((prevCart) => {
-      const existingProduct = prevCart.find((item) => item.sku === product.sku);
+      const productId = product.id || product.sku;
+      const existingProduct = prevCart.find((item) => (item.id || item.sku) === productId);
+      
       if (existingProduct) {
         return prevCart.map((item) =>
-          item.sku === product.sku
+          (item.id || item.sku) === productId
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-      return [...prevCart, { ...product, quantity }];
+
+      // Normalize price to number
+      const priceValue = typeof product.salePrice !== 'undefined' && product.salePrice !== null
+        ? product.salePrice 
+        : product.price;
+      
+      const normalizedPrice = typeof priceValue === 'string'
+        ? Number(priceValue.replace(/[^\d.]/g, ""))
+        : Number(priceValue);
+
+      const newItem = {
+        ...product,
+        id: productId,
+        price: isNaN(normalizedPrice) ? 0 : normalizedPrice,
+        quantity
+      };
+
+      return [...prevCart, newItem];
     });
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (sku) => {
-    setCart((prevCart) => prevCart.filter((item) => item.sku !== sku));
+  const removeFromCart = (id) => {
+    setCart((prevCart) => prevCart.filter((item) => (item.id || item.sku) !== id));
   };
 
-  const updateQuantity = (sku, quantity) => {
+  const updateQuantity = (id, quantity) => {
     if (quantity <= 0) {
-      removeFromCart(sku);
+      removeFromCart(id);
       return;
     }
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.sku === sku ? { ...item, quantity } : item
+        (item.id || item.sku) === id ? { ...item, quantity } : item
       )
     );
   };

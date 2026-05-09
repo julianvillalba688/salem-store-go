@@ -75,55 +75,59 @@ const CartDrawer = () => {
                   </button>
                 </div>
               ) : (
-                cart.map((item) => (
-                  <div key={item.sku} className="flex gap-5 bg-white p-4 rounded-[1.25rem] border border-[#eaddd7] shadow-sm hover:shadow-soft transition-shadow">
-                    <img
-                      src={item.image || 'https://via.placeholder.com/150'}
-                      alt={item.name}
-                      className="w-24 h-28 object-cover rounded-xl bg-warm border border-white"
-                    />
-                    <div className="flex-1 flex flex-col">
-                      <div className="flex justify-between items-start mb-1 gap-2">
-                        <h3 className="font-serif text-lg font-bold text-dark leading-tight line-clamp-2">
-                          {item.name}
-                        </h3>
-                        <button
-                          onClick={() => removeFromCart(item.sku)}
-                          className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                          aria-label={`Eliminar ${item.name}`}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                      <p className="text-[10px] uppercase tracking-widest text-gold font-bold mb-auto">SKU: {item.sku}</p>
-                      
-                      <div className="flex items-center justify-between mt-4">
-                        <div className="flex items-center bg-[#fcf9f8] border border-[#eaddd7] rounded-lg">
+                cart.map((item) => {
+                  const itemId = item.id || item.sku;
+                  return (
+                    <div key={itemId} className="flex gap-5 bg-white p-4 rounded-[1.25rem] border border-[#eaddd7] shadow-sm hover:shadow-soft transition-shadow">
+                      <img
+                        src={item.image || 'https://via.placeholder.com/150'}
+                        alt={item.name}
+                        className="w-24 h-28 object-cover rounded-xl bg-warm border border-white"
+                        onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/150'; }}
+                      />
+                      <div className="flex-1 flex flex-col">
+                        <div className="flex justify-between items-start mb-1 gap-2">
+                          <h3 className="font-serif text-lg font-bold text-dark leading-tight line-clamp-2">
+                            {item.name || 'Producto sin nombre'}
+                          </h3>
                           <button
-                            onClick={() => updateQuantity(item.sku, item.quantity - 1)}
-                            className="p-1.5 text-gray-500 hover:text-dark transition-colors"
-                            aria-label="Disminuir cantidad"
+                            onClick={() => removeFromCart(itemId)}
+                            className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                            aria-label={`Eliminar ${item.name}`}
                           >
-                            <Minus size={14} />
-                          </button>
-                          <span className="w-8 text-center font-bold text-sm text-dark">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(item.sku, item.quantity + 1)}
-                            className="p-1.5 text-gray-500 hover:text-dark transition-colors"
-                            aria-label="Aumentar cantidad"
-                          >
-                            <Plus size={14} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
-                        <p className="font-bold text-dark text-lg">
-                          {formatPrice(item.price * item.quantity)}
-                        </p>
+                        <p className="text-[10px] uppercase tracking-widest text-gold font-bold mb-auto">SKU: {item.sku || 'N/A'}</p>
+                        
+                        <div className="flex items-center justify-between mt-4">
+                          <div className="flex items-center bg-[#fcf9f8] border border-[#eaddd7] rounded-lg">
+                            <button
+                              onClick={() => updateQuantity(itemId, item.quantity - 1)}
+                              className="p-1.5 text-gray-500 hover:text-dark transition-colors"
+                              aria-label="Disminuir cantidad"
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <span className="w-8 text-center font-bold text-sm text-dark">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(itemId, item.quantity + 1)}
+                              className="p-1.5 text-gray-500 hover:text-dark transition-colors"
+                              aria-label="Aumentar cantidad"
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                          <p className="font-bold text-dark text-lg">
+                            {formatPrice((item.price || 0) * (item.quantity || 0))}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
