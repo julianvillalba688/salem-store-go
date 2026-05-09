@@ -9,23 +9,50 @@ import { siteConfig } from '../config';
 const fadeUp = { hidden:{opacity:0,y:24}, show:{opacity:1,y:0,transition:{duration:0.55,ease:'easeOut'}} };
 const stagger = { hidden:{}, show:{transition:{staggerChildren:0.1}} };
 
-const CATEGORIES = [
-  { name:'Aretes', slug:'aretes', phrase:'Detalles que iluminan', img:'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80' },
-  { name:'Collares', slug:'collares', phrase:'Capas delicadas', img:'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?auto=format&fit=crop&w=800&q=80' },
-  { name:'Pulseras', slug:'pulseras', phrase:'Brillo sutil', img:'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80' },
-  { name:'Sets', slug:'sets', phrase:'Combinaciones listas', img:'https://images.unsplash.com/photo-1611085510592-af3939396350?auto=format&fit=crop&w=800&q=80' },
-];
+const HOME_MEDIA = {
+  hero: 'https://images.unsplash.com/photo-1481391402689-6f117d396d24?auto=format&fit=crop&w=1200&q=80',
+  heroInset: 'https://images.unsplash.com/photo-1573408302382-9924f4f26005?auto=format&fit=crop&w=300&q=75',
+  categories: {
+    aretes: 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80',
+    collares: 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?auto=format&fit=crop&w=800&q=80',
+    pulseras: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80',
+    sets: 'https://images.unsplash.com/photo-1629227301322-5bc680d22086?auto=format&fit=crop&w=800&q=80'
+  },
+  editorial: {
+    diario: 'https://images.unsplash.com/photo-1512163143273-bde0e3cc741b?auto=format&fit=crop&w=800&q=80',
+    ocasiones: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?auto=format&fit=crop&w=800&q=80',
+    regalar: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=800&q=80'
+  },
+  banner: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=80'
+};
 
-const TESTIMONIALS = [
-  { name:'Carolina M.', stars:5, text:'Mis aretes llegaron perfectos y en tiempo récord. La atención por WhatsApp fue súper rápida.' },
-  { name:'Valentina R.', stars:5, text:'Compré un set de collar y pulsera para mi mamá. Quedó encantada. La calidad se nota.' },
-  { name:'Daniela P.', stars:5, text:'Me encanta que puedo ver todo el catálogo y pedir directamente. Muy cómodo y confiable.' },
+// Security check for duplicates in development
+const checkDuplicateMedia = () => {
+  const urls = [
+    HOME_MEDIA.hero,
+    HOME_MEDIA.heroInset,
+    ...Object.values(HOME_MEDIA.categories),
+    ...Object.values(HOME_MEDIA.editorial),
+    HOME_MEDIA.banner
+  ];
+  const unique = new Set(urls);
+  if (unique.size !== urls.length) {
+    console.warn('HOME_MEDIA: Detected duplicate images on homepage.');
+  }
+};
+checkDuplicateMedia();
+
+const CATEGORIES = [
+  { name:'Aretes', query:'Aretes', slug:'aretes', phrase:'Detalles que iluminan', img: HOME_MEDIA.categories.aretes },
+  { name:'Collares', query:'Cadenas Y Collar', slug:'collares', phrase:'Capas delicadas', img: HOME_MEDIA.categories.collares },
+  { name:'Pulseras', query:'Pulseras', slug:'pulseras', phrase:'Brillo sutil', img: HOME_MEDIA.categories.pulseras },
+  { name:'Sets', query:'Juegos', slug:'sets', phrase:'Combinaciones listas', img: HOME_MEDIA.categories.sets },
 ];
 
 const EDITORIAL = [
-  { label:'Para el día a día', text:'Piezas ligeras que acompañan cada momento sin esfuerzo.', img:'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=800&q=80' },
-  { label:'Para ocasiones especiales', text:'Accesorios que convierten cualquier look en memorable.', img:'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80' },
-  { label:'Para regalar', text:'El regalo que siempre acierta: bisutería con alma.', img:'https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?auto=format&fit=crop&w=800&q=80' },
+  { label:'Para el día a día', text:'Piezas ligeras que acompañan cada momento sin esfuerzo.', img: HOME_MEDIA.editorial.diario },
+  { label:'Para ocasiones especiales', text:'Accesorios que convierten cualquier look en memorable.', img: HOME_MEDIA.editorial.ocasiones },
+  { label:'Para regalar', text:'El regalo que siempre acierta: bisutería con alma.', img: HOME_MEDIA.editorial.regalar },
 ];
 
 const Home = () => {
@@ -112,7 +139,7 @@ const Home = () => {
                 {/* Golden frame accent */}
                 <div className="absolute -inset-2 rounded-[2.8rem] border border-gold/20 pointer-events-none z-20" />
                 <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden shadow-premium border border-border-soft">
-                  <img src="https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?auto=format&fit=crop&w=1200&q=80"
+                  <img src={HOME_MEDIA.hero}
                     alt="Bisutería premium Salem Store" fetchPriority="high" loading="eager"
                     className="w-full h-full object-cover"
                     onError={e=>{ e.currentTarget.src='https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80'; }} />
@@ -149,7 +176,7 @@ const Home = () => {
 
               {/* Second small image */}
               <div className="hidden lg:block absolute -bottom-8 right-0 w-40 h-48 rounded-2xl overflow-hidden shadow-soft border-2 border-white">
-                <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=300&q=75"
+                <img src={HOME_MEDIA.heroInset}
                   alt="Aretes elegantes" loading="lazy" className="w-full h-full object-cover"
                   onError={e=>{ e.currentTarget.style.display='none'; }} />
               </div>
@@ -192,7 +219,7 @@ const Home = () => {
           <motion.div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5" variants={stagger} initial="hidden" whileInView="show" viewport={{once:true,margin:'-60px'}}>
             {CATEGORIES.map(cat => (
               <motion.div key={cat.slug} variants={fadeUp}>
-                <Link to={`/catalog?category=${cat.slug}`}
+                <Link to={`/catalog?category=${cat.query}`}
                   className="group relative block rounded-3xl overflow-hidden aspect-[3/4] shadow-delicate card-hover"
                   aria-label={`Ver ${cat.name}`}>
                   <img src={cat.img} alt={`${cat.name} - ${cat.phrase}`} loading="lazy"
@@ -294,7 +321,7 @@ const Home = () => {
           <motion.div className="relative min-h-[300px] order-2 lg:order-1"
             initial={{opacity:0,x:-20}} whileInView={{opacity:1,x:0}} viewport={{once:true}} transition={{duration:0.6}}>
             <img
-              src="https://images.unsplash.com/photo-1599643478524-fb66f7ca065b?auto=format&fit=crop&w=900&q=80"
+              src={HOME_MEDIA.banner}
               alt="Colección de accesorios premium" loading="lazy"
               className="absolute inset-0 w-full h-full object-cover"
               onError={e=>{ e.currentTarget.src='https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=900&q=80'; }}

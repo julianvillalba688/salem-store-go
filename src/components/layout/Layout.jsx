@@ -128,9 +128,9 @@ export const Layout = () => {
               <ul className="space-y-3 text-sm text-white/50">
                 <li><Link to="/catalog" className="hover:text-gold transition-colors">Colección Completa</Link></li>
                 <li><Link to="/catalog?category=Aretes" className="hover:text-gold transition-colors">Aretes</Link></li>
-                <li><Link to="/catalog?category=Collares" className="hover:text-gold transition-colors">Collares</Link></li>
+                <li><Link to="/catalog?category=Cadenas Y Collar" className="hover:text-gold transition-colors">Collares</Link></li>
                 <li><Link to="/catalog?category=Pulseras" className="hover:text-gold transition-colors">Pulseras</Link></li>
-                <li><Link to="/catalog?category=Sets" className="hover:text-gold transition-colors">Sets y Conjuntos</Link></li>
+                <li><Link to="/catalog?category=Juegos" className="hover:text-gold transition-colors">Sets y Conjuntos</Link></li>
               </ul>
             </div>
 

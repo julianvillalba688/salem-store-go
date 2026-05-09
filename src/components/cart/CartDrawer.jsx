@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Trash2, Plus, Minus, Send, ShoppingCart } from 'lucide-react';
+import { X, Trash2, Plus, Minus, MessageCircle, ShoppingCart } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { generateWhatsAppMessage, openWhatsApp } from '../../utils/whatsapp';
 import { siteConfig } from '../../config';
