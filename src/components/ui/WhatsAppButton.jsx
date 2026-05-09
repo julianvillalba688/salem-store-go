@@ -16,7 +16,7 @@ const WhatsAppButton = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[40] flex flex-col items-end gap-2 animate-in slide-in-right">
+    <div className="fixed bottom-6 right-4 md:right-6 z-[40] flex flex-col items-end gap-2 animate-in slide-in-right scale-90 sm:scale-100 origin-bottom-right">
       <div className="bg-white px-4 py-2 rounded-2xl shadow-soft text-xs font-medium text-dark border border-border-soft relative animate-bounce hidden sm:block">
         ¿Te ayudo con tu pedido?
         <div className="absolute -bottom-2 right-6 w-3 h-3 bg-white border-b border-r border-border-soft transform rotate-45"></div>
@@ -28,8 +28,8 @@ const WhatsAppButton = () => {
         aria-label="Contactar por WhatsApp"
       >
         <div className="absolute inset-0 bg-green-500 rounded-full animate-pulse-ring opacity-70"></div>
-        <div className="relative bg-green-500 text-white p-4 rounded-full shadow-lg transform transition-transform group-hover:scale-110 flex items-center justify-center">
-          <MessageCircle size={28} />
+        <div className="relative bg-green-500 text-white p-3 sm:p-4 rounded-full shadow-lg transform transition-transform group-hover:scale-110 flex items-center justify-center">
+          <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7" />
         </div>
       </button>
     </div>

@@ -11,9 +11,9 @@ const stagger = { hidden:{}, show:{transition:{staggerChildren:0.1}} };
 
 const CATEGORIES = [
   { name:'Aretes', slug:'aretes', phrase:'Detalles que iluminan', img:'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=600&q=80' },
-  { name:'Collares', slug:'collares', phrase:'Capas delicadas', img:'https://images.unsplash.com/photo-1599643478524-fb66f7ca065b?auto=format&fit=crop&w=600&q=80' },
-  { name:'Pulseras', slug:'pulseras', phrase:'Brillo sutil', img:'https://images.unsplash.com/photo-1573408301185-9519f94815ac?auto=format&fit=crop&w=600&q=80' },
-  { name:'Sets', slug:'sets', phrase:'Combinaciones listas', img:'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=600&q=80' },
+  { name:'Collares', slug:'collares', phrase:'Capas delicadas', img:'https://images.unsplash.com/photo-1599643478514-4a1101869e5b?auto=format&fit=crop&w=600&q=80' },
+  { name:'Pulseras', slug:'pulseras', phrase:'Brillo sutil', img:'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=600&q=80' },
+  { name:'Sets', slug:'sets', phrase:'Combinaciones listas', img:'https://images.unsplash.com/photo-1573408301185-9519f94815ac?auto=format&fit=crop&w=600&q=80' },
 ];
 
 const TESTIMONIALS = [
@@ -25,7 +25,7 @@ const TESTIMONIALS = [
 const EDITORIAL = [
   { label:'Para el día a día', text:'Piezas ligeras que acompañan cada momento sin esfuerzo.', img:'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80' },
   { label:'Para ocasiones especiales', text:'Accesorios que convierten cualquier look en memorable.', img:'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=600&q=80' },
-  { label:'Para regalar', text:'El regalo que siempre acierta: bisutería con alma.', img:'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=80' },
+  { label:'Para regalar', text:'El regalo que siempre acierta: bisutería con alma.', img:'https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?auto=format&fit=crop&w=600&q=80' },
 ];
 
 const Home = () => {
@@ -65,7 +65,7 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
             {/* Text */}
-            <motion.div className="order-2 lg:order-1" variants={stagger} initial="hidden" animate="show">
+            <motion.div className="order-1 lg:order-1" variants={stagger} initial="hidden" animate="show">
               <motion.div variants={fadeUp} className="flex items-center gap-3 mb-8">
                 <span className="badge-gold"><Sparkles size={10} />Nueva Temporada</span>
                 <span className="w-8 h-px bg-gold/40" />
@@ -106,13 +106,13 @@ const Home = () => {
             </motion.div>
 
             {/* Images composition */}
-            <motion.div className="order-1 lg:order-2 relative" initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.8}}>
+            <motion.div className="order-2 lg:order-2 relative" initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.8}}>
               {/* Main image */}
               <div className="relative aspect-[3/4] max-w-[360px] mx-auto lg:mx-0 lg:ml-auto">
                 {/* Golden frame accent */}
                 <div className="absolute -inset-2 rounded-[2.8rem] border border-gold/20 pointer-events-none z-20" />
                 <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden shadow-premium border border-border-soft">
-                  <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80"
+                  <img src="https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?w=800&q=80"
                     alt="Bisutería premium Salem Store" fetchPriority="high" loading="eager"
                     className="w-full h-full object-cover"
                     onError={e=>{ e.currentTarget.src='https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80'; }} />
