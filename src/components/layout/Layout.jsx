@@ -27,7 +27,7 @@ export const Layout = () => {
           <div className="flex justify-between items-center h-14">
             {/* Logo */}
             <Link to="/" className="flex items-center group h-14" aria-label="Salem Store - Inicio">
-              <img src={siteConfig.logo} alt={siteConfig.siteName} className="h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+              <img src={siteConfig.logo} alt={siteConfig.siteName} className="h-10 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
             </Link>
 
             {/* Desktop Nav */}
@@ -100,7 +100,7 @@ export const Layout = () => {
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="mb-5">
-                <img src={siteConfig.logo} alt={siteConfig.siteName} className="h-10 w-auto object-contain invert brightness-0" />
+                <img src={siteConfig.logo} alt={siteConfig.siteName} className="h-12 md:h-16 w-auto object-contain invert brightness-0" />
               </div>
               <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm">
                 Piezas exclusivas que resaltan tu belleza natural. Atención personalizada y envíos seguros. Tu estilo, nuestro arte.

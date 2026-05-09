@@ -10,10 +10,10 @@ const fadeUp = { hidden:{opacity:0,y:24}, show:{opacity:1,y:0,transition:{durati
 const stagger = { hidden:{}, show:{transition:{staggerChildren:0.1}} };
 
 const CATEGORIES = [
-  { name:'Aretes', slug:'aretes', phrase:'Detalles que iluminan', img:'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=600&q=80' },
-  { name:'Collares', slug:'collares', phrase:'Capas delicadas', img:'https://images.unsplash.com/photo-1599643478514-4a1101869e5b?auto=format&fit=crop&w=600&q=80' },
-  { name:'Pulseras', slug:'pulseras', phrase:'Brillo sutil', img:'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=600&q=80' },
-  { name:'Sets', slug:'sets', phrase:'Combinaciones listas', img:'https://images.unsplash.com/photo-1573408301185-9519f94815ac?auto=format&fit=crop&w=600&q=80' },
+  { name:'Aretes', slug:'aretes', phrase:'Detalles que iluminan', img:'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80' },
+  { name:'Collares', slug:'collares', phrase:'Capas delicadas', img:'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?auto=format&fit=crop&w=800&q=80' },
+  { name:'Pulseras', slug:'pulseras', phrase:'Brillo sutil', img:'https://images.unsplash.com/photo-1573408301185-9519f94815ac?auto=format&fit=crop&w=800&q=80' },
+  { name:'Sets', slug:'sets', phrase:'Combinaciones listas', img:'https://images.unsplash.com/photo-1611085510592-af3939396350?auto=format&fit=crop&w=800&q=80' },
 ];
 
 const TESTIMONIALS = [
@@ -23,9 +23,9 @@ const TESTIMONIALS = [
 ];
 
 const EDITORIAL = [
-  { label:'Para el día a día', text:'Piezas ligeras que acompañan cada momento sin esfuerzo.', img:'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80' },
-  { label:'Para ocasiones especiales', text:'Accesorios que convierten cualquier look en memorable.', img:'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=600&q=80' },
-  { label:'Para regalar', text:'El regalo que siempre acierta: bisutería con alma.', img:'https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?auto=format&fit=crop&w=600&q=80' },
+  { label:'Para el día a día', text:'Piezas ligeras que acompañan cada momento sin esfuerzo.', img:'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=800&q=80' },
+  { label:'Para ocasiones especiales', text:'Accesorios que convierten cualquier look en memorable.', img:'https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?auto=format&fit=crop&w=800&q=80' },
+  { label:'Para regalar', text:'El regalo que siempre acierta: bisutería con alma.', img:'https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?auto=format&fit=crop&w=800&q=80' },
 ];
 
 const Home = () => {
@@ -112,7 +112,7 @@ const Home = () => {
                 {/* Golden frame accent */}
                 <div className="absolute -inset-2 rounded-[2.8rem] border border-gold/20 pointer-events-none z-20" />
                 <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden shadow-premium border border-border-soft">
-                  <img src="https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?w=800&q=80"
+                  <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80"
                     alt="Bisutería premium Salem Store" fetchPriority="high" loading="eager"
                     className="w-full h-full object-cover"
                     onError={e=>{ e.currentTarget.src='https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80'; }} />
