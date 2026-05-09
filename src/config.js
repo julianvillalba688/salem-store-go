@@ -7,7 +7,7 @@ export const BRAND = {
   favicon: "/favicon.svg",
   ogImage: "/og-image.png",
   siteUrl: "https://salem-store-boutique.vercel.app",
-  whatsappNumber: "573046778813"
+  whatsappNumber: "573236106304"
 };
 
 export const siteConfig = {

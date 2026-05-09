@@ -100,7 +100,7 @@ export const Layout = () => {
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="mb-5">
-                <img src={siteConfig.logo} alt={siteConfig.siteName} className="h-12 md:h-16 w-auto object-contain invert brightness-0" />
+                <img src={siteConfig.logo} alt={siteConfig.siteName} className="h-12 md:h-16 w-auto object-contain" />
               </div>
               <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm">
                 Piezas exclusivas que resaltan tu belleza natural. Atención personalizada y envíos seguros. Tu estilo, nuestro arte.
