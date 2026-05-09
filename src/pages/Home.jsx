@@ -140,51 +140,57 @@ const Home = () => {
 
             {/* Images composition */}
             <motion.div className="order-2 lg:order-2 relative" initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.8}}>
-              {/* Main image */}
-              <div className="relative aspect-[3/4] max-w-[280px] sm:max-w-[360px] mx-auto lg:mx-0 lg:ml-auto">
-                {/* Golden frame accent */}
-                <div className="absolute -inset-2 rounded-[2.8rem] border border-gold/20 pointer-events-none z-20" />
-                <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden shadow-premium border border-border-soft">
+              {/* Main composition container (hero-visual) */}
+              <div className="relative aspect-[3/4] max-w-[280px] sm:max-w-[360px] mx-auto lg:mx-0 lg:ml-auto lg:mr-14 group">
+                
+                {/* Golden frame accent - Outer background */}
+                <div className="absolute -inset-3 rounded-[3rem] border border-gold/15 pointer-events-none z-0" />
+                
+                {/* Image Wrapper - The frame with overflow hidden */}
+                <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden shadow-premium border border-border-soft z-10 bg-white">
                   <img src={HOME_MEDIA.hero}
                     alt="Bisutería premium Salem Store" fetchPriority="high" loading="eager"
                     className="w-full h-full object-cover"
                     onError={e=>{ e.currentTarget.src='https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80'; }} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-dark/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-dark/15 to-transparent" />
+                </div>
                 
-                {/* Floating card: clientes */}
+                {/* Floating card: clientes - External and Clean */}
                 <motion.div
-                  className="absolute -bottom-5 -left-4 sm:-left-8 bg-white px-4 py-3 rounded-2xl shadow-premium border border-border-soft flex items-center gap-3 z-10"
-                  animate={{y:[0,-6,0]}} transition={{duration:4,repeat:Infinity,ease:'easeInOut'}}>
+                  className="absolute -bottom-6 -left-4 sm:-left-12 bg-[#FCFAF7] px-4 py-3 rounded-2xl shadow-premium border border-border-soft flex items-center gap-3 z-30"
+                  animate={{y:[0,-8,0]}} transition={{duration:4,repeat:Infinity,ease:'easeInOut'}}>
                   <div className="w-9 h-9 rounded-full flex items-center justify-center bg-gold/10 text-gold flex-shrink-0">
                     <Star size={16} fill="currentColor" />
                   </div>
-                  <div>
+                  <div className="pr-1">
                     <p className="text-[9px] text-gray-400 uppercase tracking-widest font-bold whitespace-nowrap">Clientas felices</p>
-                    <p className="font-serif text-sm font-bold text-dark">+500 pedidos</p>
+                    <p className="font-serif text-sm font-bold text-dark whitespace-nowrap">+500 pedidos</p>
                   </div>
                 </motion.div>
 
-                {/* Floating badge: compra segura */}
+                {/* Floating badge: compra segura - Premium Dark */}
                 <motion.div
-                  className="absolute -top-3 -right-3 sm:-right-5 bg-dark text-white px-3 py-2 rounded-xl text-[10px] font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-md"
-                  animate={{y:[0,-4,0]}} transition={{duration:3.5,repeat:Infinity,ease:'easeInOut',delay:0.5}}>
-                  <ShieldCheck size={11} className="text-gold" /> Compra segura
+                  className="absolute -top-4 -right-4 sm:-right-10 bg-[#1A1A1A] text-white px-4 py-2.5 rounded-xl text-[10px] font-bold tracking-wider uppercase flex items-center gap-2 shadow-2xl z-30 border border-white/10"
+                  animate={{y:[0,-5,0]}} transition={{duration:3.5,repeat:Infinity,ease:'easeInOut',delay:0.5}}>
+                  <ShieldCheck size={12} className="text-gold" /> 
+                  <span className="whitespace-nowrap">Compra segura</span>
                 </motion.div>
 
-                {/* Floating badge: WhatsApp */}
+                {/* Floating badge: WhatsApp - External */}
                 <motion.div
-                  className="absolute bottom-20 -right-4 sm:-right-8 bg-[#25D366] text-white px-3 py-2 rounded-xl text-[10px] font-bold flex items-center gap-1.5 shadow-md"
-                  animate={{y:[0,-5,0]}} transition={{duration:4.5,repeat:Infinity,ease:'easeInOut',delay:1}}>
-                  <MessageCircle size={11} /> Consulta rápida
+                  className="absolute bottom-28 -right-6 sm:-right-12 bg-[#25D366] text-white px-3.5 py-2.5 rounded-xl text-[10px] font-bold flex items-center gap-2 shadow-lg z-30"
+                  animate={{y:[0,-6,0]}} transition={{duration:4.5,repeat:Infinity,ease:'easeInOut',delay:1}}>
+                  <MessageCircle size={12} fill="white" className="text-[#25D366]" /> 
+                  <span className="whitespace-nowrap">Consulta rápida</span>
                 </motion.div>
+
+                {/* Second small image - Desktop only */}
+                <div className="hidden lg:block absolute -bottom-10 -right-12 w-44 h-52 rounded-2xl overflow-hidden shadow-soft border-4 border-white z-20 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                  <img src={HOME_MEDIA.heroInset}
+                    alt="Detalle de joyería" loading="lazy" className="w-full h-full object-cover"
+                    onError={e=>{ e.currentTarget.style.display='none'; }} />
+                  <div className="absolute inset-0 bg-gold/5" />
                 </div>
-              </div>
-
-              {/* Second small image */}
-              <div className="hidden lg:block absolute -bottom-8 right-0 w-40 h-48 rounded-2xl overflow-hidden shadow-soft border-2 border-white">
-                <img src={HOME_MEDIA.heroInset}
-                  alt="Aretes elegantes" loading="lazy" className="w-full h-full object-cover"
-                  onError={e=>{ e.currentTarget.style.display='none'; }} />
               </div>
             </motion.div>
           </div>
