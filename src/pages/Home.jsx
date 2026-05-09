@@ -10,20 +10,20 @@ const fadeUp = { hidden:{opacity:0,y:24}, show:{opacity:1,y:0,transition:{durati
 const stagger = { hidden:{}, show:{transition:{staggerChildren:0.1}} };
 
 const HOME_MEDIA = {
-  hero: 'https://images.unsplash.com/photo-1481391402689-6f117d396d24?auto=format&fit=crop&w=1200&q=80',
-  heroInset: 'https://images.unsplash.com/photo-1573408302382-9924f4f26005?auto=format&fit=crop&w=300&q=75',
+  hero: 'https://images.unsplash.com/photo-1611085510592-af3939396350?auto=format&fit=crop&w=1200&q=80',
+  heroInset: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?auto=format&fit=crop&w=400&q=80',
   categories: {
-    aretes: 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80',
-    collares: 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?auto=format&fit=crop&w=800&q=80',
-    pulseras: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80',
-    sets: 'https://images.unsplash.com/photo-1629227301322-5bc680d22086?auto=format&fit=crop&w=800&q=80'
+    aretes: 'https://assets.rediredi.com/items/images/5b4e6366-bb50-490c-8d24-1a4f8f5fda50_8c6466c7-a51f-4198-b1cb-731f2d21cfa3.jpg',
+    collares: 'https://assets.rediredi.com/items/images/5b4e6366-bb50-490c-8d24-1a4f8f5fda50_bd0bd3a2-a842-4501-a6b4-1ad58f972a53.jpg',
+    pulseras: 'https://assets.rediredi.com/items/images/5b4e6366-bb50-490c-8d24-1a4f8f5fda50_06b4309c-ab15-4944-9060-87c58de3b660.jpg',
+    sets: 'https://assets.rediredi.com/items/images/5b4e6366-bb50-490c-8d24-1a4f8f5fda50_d22735b7-2f34-450b-b8a5-a0af62a00f71.jpg'
   },
   editorial: {
-    diario: 'https://images.unsplash.com/photo-1512163143273-bde0e3cc741b?auto=format&fit=crop&w=800&q=80',
-    ocasiones: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?auto=format&fit=crop&w=800&q=80',
-    regalar: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=800&q=80'
+    diario: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=800&q=80',
+    ocasiones: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80',
+    regalar: 'https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?auto=format&fit=crop&w=800&q=80'
   },
-  banner: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1200&q=80'
+  banner: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1200&q=80'
 };
 
 // Security check for duplicates in development
@@ -35,8 +35,8 @@ const checkDuplicateMedia = () => {
     ...Object.values(HOME_MEDIA.editorial),
     HOME_MEDIA.banner
   ];
-  const unique = new Set(urls);
-  if (unique.size !== urls.length) {
+  const unique = new Set(urls.filter(Boolean));
+  if (unique.size !== urls.filter(Boolean).length) {
     console.warn('HOME_MEDIA: Detected duplicate images on homepage.');
   }
 };
