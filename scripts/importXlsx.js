@@ -67,18 +67,55 @@ try {
     }
     if (row.sku) seenSkus.add(row.sku);
 
+    const category = row.categoria || 'General';
+    const name = row.nombre || '';
+    
+    // Generar descripción limpia basada en categoría si la original tiene basura o es corta
+    const getCleanDescription = (desc, name, cat) => {
+      const lowerName = name.toLowerCase();
+      const lowerCat = cat.toLowerCase();
+      
+      const templates = {
+        'Aretes': 'Aretes delicados para iluminar el rostro y complementar looks diarios o especiales.',
+        'Anillos': 'Anillo femenino y versátil, ideal para combinar con otras piezas o llevar como detalle protagonista.',
+        'Collares': 'Collar delicado para elevar el escote y acompañar looks casuales o elegantes.',
+        'Pulseras': 'Pulsera sutil y versátil para combinar en capas o usar como detalle diario.',
+        'Tobilleras': 'Tobillera delicada para dar un toque femenino y fresco a tus looks.',
+        'Dijes': 'Dije especial para personalizar cadenas y llevar un detalle con significado.',
+        'Sets': 'Set coordinado de accesorios, ideal para regalar o lucir una combinación lista para usar.',
+        'Ear Cuff': 'Accesorio moderno para darle un toque diferente y luminoso a tu look sin esfuerzo.',
+        'General': 'Pieza delicada diseñada para resaltar tu estilo en cualquier ocasión.'
+      };
+
+      let type = 'General';
+      if (lowerCat.includes('arete') || lowerName.includes('arete') || lowerName.includes('topo') || lowerName.includes('argolla') || lowerName.includes('candonga')) type = 'Aretes';
+      else if (lowerCat.includes('anillo') || lowerName.includes('anillo')) type = 'Anillos';
+      else if (lowerCat.includes('collar') || lowerCat.includes('cadena') || lowerCat.includes('gargantilla') || lowerName.includes('collar') || lowerName.includes('cadena')) type = 'Collares';
+      else if (lowerCat.includes('pulsera') || lowerName.includes('pulsera')) type = 'Pulseras';
+      else if (lowerCat.includes('tobillera') || lowerName.includes('tobillera')) type = 'Tobilleras';
+      else if (lowerCat.includes('dije') || lowerName.includes('dije')) type = 'Dijes';
+      else if (lowerCat.includes('juego') || lowerCat.includes('set') || lowerName.includes('juego') || lowerName.includes('set')) type = 'Sets';
+      else if (lowerName.includes('cuff')) type = 'Ear Cuff';
+
+      // Si la descripción original tiene "Precio", "$", "COP", "http" o es muy corta, usamos el template
+      if (!desc || desc.length < 10 || desc.includes('Precio') || desc.includes('$') || desc.includes('COP') || desc.includes('http')) {
+        return templates[type] || templates['General'];
+      }
+      return desc;
+    };
+
     const product = {
       id: row.sku ? row.sku.toString() : `id-${index}`,
       sku: row.sku ? row.sku.toString() : '',
-      name: row.nombre || '',
-      slug: slugify(row.nombre || ''),
-      description: row.descripcion || '',
+      name: name,
+      slug: slugify(name),
+      description: getCleanDescription(row.descripcion, name, category),
       price: parseFloat(row.precio) || 0,
       salePrice: row.precio_oferta ? parseFloat(row.precio_oferta) : null,
-      category: row.categoria || 'General',
+      category: category,
       subcategory: row.subcategoria || '',
-      brand: row.marca || '',
-      stock: row.stock !== undefined ? parseInt(row.stock) : 0,
+      brand: row.marca || 'Salem Store',
+      stock: row.stock !== undefined ? parseInt(row.stock) : 10,
       status: row.estado ? row.estado.toLowerCase() : 'disponible',
       image: row.imagen || '',
       gallery: row.imagenes_extra ? row.imagenes_extra.split(',').map(url => url.trim()) : [],
