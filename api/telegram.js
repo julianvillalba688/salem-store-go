@@ -27,7 +27,6 @@ async function safeSendTelegram(chatId, text) {
     }, 8000);
     const data = await res.json();
     console.log("TELEGRAM_RESPONSE_STATUS", res.status);
-    console.log("TELEGRAM_RESPONSE_BODY", JSON.stringify(data));
     return res.ok;
   } catch (e) {
     console.error("safeSendTelegram ERROR:", e.message);
@@ -35,54 +34,88 @@ async function safeSendTelegram(chatId, text) {
   }
 }
 
-async function callGemini(text, productsSummary) {
-  const model = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
-  const apiKey = process.env.GEMINI_API_KEY;
-  console.log("GEMINI_MODEL_USED", model);
+async function callDeepSeek(text, productsSummary) {
+  const model = process.env.DEEPSEEK_MODEL || "deepseek-v4-flash";
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) throw new Error("Missing DEEPSEEK_API_KEY");
+
+  const url = "https://api.deepseek.com/chat/completions";
+  const prompt = `Eres extractor de pedidos para Salem Store. Devuelve solo JSON válido. No inventes productos. Usa español.
   
-  if (!apiKey) throw new Error("Missing GEMINI_API_KEY");
+  Candidatos del catálogo:
+  ${JSON.stringify(productsSummary)}
   
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-  const prompt = `Eres extractor de pedidos para Salem Store. Devuelve solo JSON válido. No inventes productos. Si no estás seguro, marca faltantes. Usa español. Detecta precios colombianos con punto o coma.
+  Mensaje del usuario:
+  "${text}"
   
-  Catálogo: ${JSON.stringify(productsSummary)}
-  
-  Mensaje: "${text}"
-  
-  JSON schema:
+  Estructura JSON requerida:
   {
+    "intencion": "nuevo_pedido|confirmar_pedido|cancelar|consulta_producto|saludo|otro",
     "cliente": string,
-    "productosSolicitados": [string],
-    "cantidades": [number],
-    "precioPersonalizado": number,
+    "productosSolicitados": [
+      {
+        "nombre": string,
+        "sku": string,
+        "cantidad": number,
+        "precioPersonalizado": number
+      }
+    ],
     "totalManual": number,
     "direccion": string,
     "pago": string,
     "estado": string,
-    "intencion": "nuevo_pedido" | "confirmar_pedido" | "cancelar" | "consulta_producto" | "saludo" | "otro",
     "faltantes": [string]
   }`;
 
   const res = await fetchWithTimeout(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { response_mime_type: "application/json" }
+      model,
+      messages: [
+        { role: "system", content: "Eres extractor de pedidos para Salem Store. Devuelve solo JSON válido. No inventes productos. Usa español." },
+        { role: "user", content: prompt }
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.1
     })
   }, 12000);
 
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
-  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+  const raw = data.choices[0].message.content;
   return { raw, json: JSON.parse(raw) };
+}
+
+function getCandidates(text, products) {
+  const norm = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").trim();
+  const textNorm = norm(text);
+  const words = textNorm.split(" ").filter(w => w.length > 2);
+  
+  return products
+    .map(p => {
+      let score = 0;
+      const nameNorm = norm(p.name);
+      const skuNorm = norm(p.sku);
+      if (textNorm.includes(nameNorm)) score += 10;
+      if (skuNorm && textNorm.includes(skuNorm)) score += 20;
+      words.forEach(w => {
+        if (nameNorm.includes(w)) score += 1;
+      });
+      return { ...p, score };
+    })
+    .filter(p => p.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10)
+    .map(p => ({ sku: p.sku, name: p.name, price: p.price, salePrice: p.salePrice, stock: p.stock, status: p.status }));
 }
 
 export default async function handler(req, res) {
   console.log("TELEGRAM_WEBHOOK_HIT");
-  console.log("method", req.method);
-  console.log("queryKeys", Object.keys(req.query || {}));
-
+  
   if (req.method !== "POST") {
     return res.status(200).json({ ok: true, message: "Bot activo" });
   }
@@ -93,23 +126,18 @@ export default async function handler(req, res) {
   console.log("bodyText", text);
 
   try {
-    // Secret validation
     if (req.query.secret !== process.env.BOT_SECRET) {
       console.log("BOT_SECRET_INVALID");
       return res.status(200).json({ ok: false, error: "BOT_SECRET_INVALID" });
     }
 
-    if (!message || !text) {
-      return res.status(200).json({ ok: true, ignored: true });
-    }
+    if (!message || !text) return res.status(200).json({ ok: true });
 
-    // /start early
     if (text === "/start") {
       await safeSendTelegram(chatId, "Bot activo. Envíame un pedido.");
       return res.status(200).json({ ok: true });
     }
 
-    // Commands
     if (text === "/debug") {
       const debugMsg = [
         `TELEGRAM_BOT_TOKEN: ${!!process.env.TELEGRAM_BOT_TOKEN}`,
@@ -117,7 +145,8 @@ export default async function handler(req, res) {
         `PRODUCTS_URL: ${!!process.env.PRODUCTS_URL}`,
         `APPS_SCRIPT_URL: ${!!process.env.APPS_SCRIPT_URL}`,
         `APPS_SCRIPT_TOKEN: ${!!process.env.APPS_SCRIPT_TOKEN}`,
-        `GEMINI_API_KEY: ${!!process.env.GEMINI_API_KEY}`
+        `DEEPSEEK_API_KEY: ${!!process.env.DEEPSEEK_API_KEY}`,
+        `DEEPSEEK_MODEL: ${process.env.DEEPSEEK_MODEL || "deepseek-v4-flash"}`
       ].join("\n");
       await safeSendTelegram(chatId, debugMsg);
       return res.status(200).json({ ok: true });
@@ -139,21 +168,12 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
-    if (text === "/testgemini") {
+    if (text === "/testdeepseek") {
       try {
-        const model = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
-        const apiKey = process.env.GEMINI_API_KEY;
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-        const gRes = await fetchWithTimeout(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: "Responde solo: OK" }] }] })
-        }, 12000);
-        const gData = await gRes.json();
-        const responseText = gData.candidates?.[0]?.content?.parts?.[0]?.text || "No content";
-        await safeSendTelegram(chatId, `Gemini OK: ${responseText.trim()}`);
+        const dRes = await callDeepSeek("Responde solo JSON: {\"ok\":true}", []);
+        await safeSendTelegram(chatId, `DeepSeek OK: ${dRes.raw}`);
       } catch (e) {
-        await safeSendTelegram(chatId, `Gemini ERROR: ${e.message}`);
+        await safeSendTelegram(chatId, `DeepSeek ERROR: ${e.message}`);
       }
       return res.status(200).json({ ok: true });
     }
@@ -162,33 +182,27 @@ export default async function handler(req, res) {
       try {
         const sRes = await fetchWithTimeout(process.env.APPS_SCRIPT_URL, {
           method: "POST",
-          body: JSON.stringify({ token: process.env.APPS_SCRIPT_TOKEN, test: true, cliente: "TEST_BOT" })
+          body: JSON.stringify({ token: process.env.APPS_SCRIPT_TOKEN, test: true, cliente: "TEST_DEEPSEEK" })
         }, 12000);
-        const sText = await sRes.text();
-        await safeSendTelegram(chatId, `Sheets OK: ${sText}`);
+        await safeSendTelegram(chatId, `Sheets OK: ${await sRes.text()}`);
       } catch (e) {
         await safeSendTelegram(chatId, `Sheets ERROR: ${e.message}`);
       }
       return res.status(200).json({ ok: true });
     }
 
-    // Logic for orders
     const textLower = text.toLowerCase().trim();
     const isConfirm = ["si", "sí", "ok", "confirmar", "confirmado", "listo", "registrar", "guardar"].includes(textLower);
     const isCancel = ["cancelar", "borrar", "no"].includes(textLower);
 
     if (isConfirm && pendingOrders[chatId]) {
-      try {
-        const order = pendingOrders[chatId];
-        await fetchWithTimeout(process.env.APPS_SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify({ token: process.env.APPS_SCRIPT_TOKEN, ...order })
-        }, 12000);
-        delete pendingOrders[chatId];
-        await safeSendTelegram(chatId, "✅ <b>Pedido registrado exitosamente.</b>");
-      } catch (e) {
-        await safeSendTelegram(chatId, `Error al guardar en Sheets: ${e.message}`);
-      }
+      const order = pendingOrders[chatId];
+      await fetchWithTimeout(process.env.APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ token: process.env.APPS_SCRIPT_TOKEN, ...order })
+      }, 12000);
+      delete pendingOrders[chatId];
+      await safeSendTelegram(chatId, "✅ <b>Pedido registrado exitosamente.</b>");
       return res.status(200).json({ ok: true });
     }
 
@@ -198,27 +212,23 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
-    // AI Flow
     try {
       const prodRes = await fetchWithTimeout(process.env.PRODUCTS_URL, {}, 8000);
       const allProducts = await prodRes.json();
       const products = allProducts.filter(p => p.status === "disponible" && p.stock > 0);
-      const productsSummary = products.map(p => ({ sku: p.sku, name: p.name, price: p.price, salePrice: p.salePrice }));
+      const candidates = getCandidates(text, products);
 
       let ext = {};
       try {
-        const aiData = await callGemini(text, productsSummary);
-        console.log("Gemini raw response", aiData.raw);
-        ext = aiData.json;
-        console.log("parsed JSON", JSON.stringify(ext));
-      } catch (aiErr) {
-        console.error("GEMINI_FAILED_FALLBACK_TO_LOCAL", aiErr.message);
-        // Fallback simple parser
-        const normText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        ext = {
-          intencion: "nuevo_pedido",
-          productosSolicitados: products.filter(p => normText.includes(p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))).map(p => p.name)
-        };
+        const dRes = await callDeepSeek(text, candidates);
+        console.log("DeepSeek raw response", dRes.raw);
+        ext = dRes.json;
+      } catch (e) {
+        console.error("DEEPSEEK_ERROR", e.message);
+        // Fallback local parser
+        const norm = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const nt = norm(text);
+        ext = { intencion: "nuevo_pedido", productosSolicitados: candidates.filter(c => nt.includes(norm(c.name))).map(c => ({ nombre: c.name, sku: c.sku, cantidad: 1 })) };
       }
 
       if (ext.intencion === "saludo") {
@@ -227,67 +237,62 @@ export default async function handler(req, res) {
       }
 
       const found = [];
-      const norm = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").trim();
-
       if (ext.productosSolicitados && Array.isArray(ext.productosSolicitados)) {
-        ext.productosSolicitados.forEach((reqP, idx) => {
-          const sn = norm(reqP);
-          const p = products.find(i => norm(i.name).includes(sn) || norm(i.sku) === sn);
+        ext.productosSolicitados.forEach(sol => {
+          const p = products.find(i => i.sku === sol.sku || i.name === sol.nombre);
           if (p) {
-            const qty = (ext.cantidades && ext.cantidades[idx]) || 1;
-            const up = ext.precioPersonalizado || (p.salePrice > 0 ? p.salePrice : p.price);
-            found.push({ name: p.name, sku: p.sku, qty, up, tp: ext.precioPersonalizado ? "Manual" : (p.salePrice > 0 ? "Oferta" : "Base"), sub: up * qty });
+            const up = sol.precioPersonalizado || (p.salePrice > 0 ? p.salePrice : p.price);
+            found.push({ name: p.name, sku: p.sku, qty: sol.cantidad || 1, up, sub: up * (sol.cantidad || 1) });
           }
         });
       }
-      console.log("productos encontrados", found.length);
-
-      const subtotal = found.reduce((a, b) => a + b.sub, 0);
-      const currentOrder = {
-        cliente: ext.cliente || (pendingOrders[chatId]?.cliente) || "",
-        productos: found.map(i => i.name).join(", "),
-        skus: found.map(i => i.sku).join(", "),
-        cantidades: found.map(i => i.qty).join(", "),
-        preciosUnitarios: found.map(i => i.up).join(", "),
-        subtotalCatalogo: subtotal,
-        subtotal: subtotal,
-        totalManual: ext.totalManual || 0,
-        direccion: ext.direccion || (pendingOrders[chatId]?.direccion) || "",
-        pago: ext.pago || (pendingOrders[chatId]?.pago) || "",
-        estado: ext.estado || "Pendiente",
-        textoOriginal: text,
-        telegram: message.from.username || message.from.first_name
-      };
 
       if (found.length > 0) {
-        pendingOrders[chatId] = currentOrder;
+        const subtotal = found.reduce((a, b) => a + b.sub, 0);
+        const order = {
+          cliente: ext.cliente || pendingOrders[chatId]?.cliente || "",
+          productos: found.map(i => i.name).join(", "),
+          skus: found.map(i => i.sku).join(", "),
+          cantidades: found.map(i => i.qty).join(", "),
+          preciosUnitarios: found.map(i => i.up).join(", "),
+          subtotalCatalogo: subtotal,
+          subtotal: subtotal,
+          totalManual: ext.totalManual || 0,
+          direccion: ext.direccion || pendingOrders[chatId]?.direccion || "",
+          pago: ext.pago || pendingOrders[chatId]?.pago || "",
+          estado: ext.estado || "Pendiente",
+          textoOriginal: text,
+          telegram: message.from.username || message.from.first_name
+        };
+        pendingOrders[chatId] = order;
+
         let resMsg = `📋 <b>Resumen del Pedido:</b>\n\n`;
         found.forEach(i => resMsg += `• ${i.qty}x ${i.name} (${i.sku}) - $${i.up.toLocaleString()}\n`);
-        resMsg += `\n<b>Total:</b> $${(currentOrder.totalManual || subtotal).toLocaleString()}\n`;
-        resMsg += `<b>Cliente:</b> ${currentOrder.cliente || "<i>Pendiente</i>"}\n`;
-        resMsg += `<b>Dirección:</b> ${currentOrder.direccion || "<i>Pendiente</i>"}\n`;
-        resMsg += `<b>Pago:</b> ${currentOrder.pago || "<i>Pendiente</i>"}\n\n`;
+        resMsg += `\n<b>Total:</b> $${(order.totalManual || subtotal).toLocaleString()}\n`;
+        resMsg += `<b>Cliente:</b> ${order.cliente || "<i>Pendiente</i>"}\n`;
+        resMsg += `<b>Dirección:</b> ${order.direccion || "<i>Pendiente</i>"}\n`;
+        resMsg += `<b>Pago:</b> ${order.pago || "<i>Pendiente</i>"}\n\n`;
         
-        if (!currentOrder.cliente || !currentOrder.direccion || !currentOrder.pago) {
+        if (!order.cliente || !order.direccion || !order.pago) {
           resMsg += `Faltan datos (<i>${ext.faltantes?.join(", ") || "datos"}</i>). Por favor complétalo.`;
         } else {
           resMsg += `¿Confirmas el pedido? Responde <b>"Sí"</b> o <b>"Cancelar"</b>.`;
         }
         await safeSendTelegram(chatId, resMsg);
-      } else {
+      } else if (ext.intencion === "nuevo_pedido") {
         await safeSendTelegram(chatId, "No encontré productos. Escribe nombre exacto o SKU.");
       }
 
     } catch (e) {
       console.error("AI_FLOW_ERROR", e.message);
-      await safeSendTelegram(chatId, `Error en proceso de pedido: ${e.message}`);
+      await safeSendTelegram(chatId, "Error en proceso de pedido.");
     }
 
     return res.status(200).json({ ok: true });
 
   } catch (err) {
     console.error("WEBHOOK_FATAL_ERROR", err.stack || err);
-    if (chatId) await safeSendTelegram(chatId, "Error crítico del bot. Revisa logs.");
-    return res.status(200).json({ ok: false, error: String(err.message || err) });
+    if (chatId) await safeSendTelegram(chatId, "Error crítico.");
+    return res.status(200).json({ ok: false });
   }
 }
