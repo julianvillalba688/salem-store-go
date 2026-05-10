@@ -36,8 +36,10 @@ async function safeSendTelegram(chatId, text) {
 }
 
 async function callGemini(text, productsSummary) {
-  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
   const apiKey = process.env.GEMINI_API_KEY;
+  console.log("GEMINI_MODEL_USED", model);
+  
   if (!apiKey) throw new Error("Missing GEMINI_API_KEY");
   
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
@@ -139,7 +141,7 @@ export default async function handler(req, res) {
 
     if (text === "/testgemini") {
       try {
-        const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+        const model = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
         const apiKey = process.env.GEMINI_API_KEY;
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
         const gRes = await fetchWithTimeout(url, {
@@ -203,10 +205,21 @@ export default async function handler(req, res) {
       const products = allProducts.filter(p => p.status === "disponible" && p.stock > 0);
       const productsSummary = products.map(p => ({ sku: p.sku, name: p.name, price: p.price, salePrice: p.salePrice }));
 
-      const aiData = await callGemini(text, productsSummary);
-      console.log("Gemini raw response", aiData.raw);
-      const ext = aiData.json;
-      console.log("parsed JSON", JSON.stringify(ext));
+      let ext = {};
+      try {
+        const aiData = await callGemini(text, productsSummary);
+        console.log("Gemini raw response", aiData.raw);
+        ext = aiData.json;
+        console.log("parsed JSON", JSON.stringify(ext));
+      } catch (aiErr) {
+        console.error("GEMINI_FAILED_FALLBACK_TO_LOCAL", aiErr.message);
+        // Fallback simple parser
+        const normText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        ext = {
+          intencion: "nuevo_pedido",
+          productosSolicitados: products.filter(p => normText.includes(p.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))).map(p => p.name)
+        };
+      }
 
       if (ext.intencion === "saludo") {
         await safeSendTelegram(chatId, "¡Hola! Soy el asistente de Salem Store. ¿Qué deseas pedir hoy?");
@@ -267,7 +280,7 @@ export default async function handler(req, res) {
 
     } catch (e) {
       console.error("AI_FLOW_ERROR", e.message);
-      await safeSendTelegram(chatId, `Error en proceso de IA: ${e.message}`);
+      await safeSendTelegram(chatId, `Error en proceso de pedido: ${e.message}`);
     }
 
     return res.status(200).json({ ok: true });
