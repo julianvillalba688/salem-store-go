@@ -62,7 +62,7 @@ export default async function handler(req, res) {
     }
 
     const aiData = await callAIForOrderExtraction(text, productsSummary);
-    console.log("IA raw response", aiData.raw);
+    console.log("Gemini raw response", aiData.raw);
     console.log("parsed JSON", aiData.json);
 
     const ext = aiData.json;
@@ -153,7 +153,10 @@ export default async function handler(req, res) {
 }
 
 async function callAIForOrderExtraction(text, productsSummary) {
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const apiKey = process.env.GEMINI_API_KEY;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
   const prompt = `Eres extractor de pedidos para Salem Store. Devuelve solo JSON válido. No inventes productos. Si no estás seguro, marca faltantes. Usa español. Detecta precios colombianos con punto o coma.
   
   Catálogo: ${JSON.stringify(productsSummary)}
@@ -174,20 +177,20 @@ async function callAIForOrderExtraction(text, productsSummary) {
     "faltantes": [string]
   }`;
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model,
-      messages: [{ role: "system", content: prompt }],
-      response_format: { type: "json_object" }
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        response_mime_type: "application/json"
+      }
     })
   });
+
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
-  const raw = data.choices[0].message.content;
+  
+  const raw = data.candidates[0].content.parts[0].text;
   return { raw, json: JSON.parse(raw) };
 }
