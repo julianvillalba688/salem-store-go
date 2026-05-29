@@ -5,9 +5,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AnimatePresence } from 'framer-motion';
 
-import { SalemHeader } from './components/layout/SalemHeader';
-import { SalemFooter } from './components/layout/SalemFooter';
-import { SalemWhatsAppCTA } from './components/action/SalemWhatsAppCTA';
+import { PremiumHeader } from './components/layout/PremiumHeader';
+import { PremiumFooter } from './components/layout/PremiumFooter';
 
 import { Home } from './pages/Home';
 import { Catalog } from './pages/Catalog';
@@ -15,13 +14,12 @@ import { ProductDetail } from './pages/ProductDetail';
 
 const Layout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-cream flex flex-col font-sans selection:bg-gold/20 text-carbon">
-      <SalemHeader />
+    <div className="min-h-screen bg-salem-ivory flex flex-col font-sans selection:bg-salem-gold/20 text-salem-black">
+      <PremiumHeader />
       <main className="flex-grow">
         {children}
       </main>
-      <SalemFooter />
-      <SalemWhatsAppCTA />
+      <PremiumFooter />
     </div>
   );
 };

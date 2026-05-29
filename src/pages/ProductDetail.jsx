@@ -1,17 +1,21 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { SalemMagneticButton } from '../components/ui/SalemMagneticButton';
-import { SalemReveal } from '../components/ui/SalemReveal';
+import { MagneticButton } from '../components/ui/MagneticButton';
+import { RevealSection } from '../components/ui/RevealSection';
+import { ProductGrid } from '../components/product/ProductGrid';
+import { FloatingWhatsApp } from '../components/action/FloatingWhatsApp';
 import { useCatalog } from '../hooks/useCatalog';
 
 export const ProductDetail = () => {
   const { id } = useParams();
   const { products, loading } = useCatalog();
   const [product, setProduct] = useState(null);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setImageError(false);
   }, [id]);
 
   useEffect(() => {
@@ -49,18 +53,20 @@ export const ProductDetail = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-salem-ivory text-salem-ink px-6 text-center">
         <h1 className="font-serif text-5xl md:text-7xl mb-8">Pieza inaccesible</h1>
         <p className="font-sans text-salem-muted font-light max-w-md mx-auto mb-12">La pieza que buscas ya no se encuentra en nuestra colección actual.</p>
-        <SalemMagneticButton href="/catalog" variant="outline">
+        <MagneticButton href="/catalog" variant="outline">
           Volver a la Colección
-        </SalemMagneticButton>
+        </MagneticButton>
       </div>
     );
   }
 
-  const finalPrice = product.salePrice ? product.salePrice : product.price;
-  const whatsappMsg = `Hola, estoy interesada en el producto ${product.name} (SKU: ${product.sku || product.id}) de Salem Store.`;
+  const whatsappMsg = `Hola, estoy interesada en la pieza ${product.name} (SKU: ${product.sku || product.id}) de Salem Store.`;
+  const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjRThEREM4IiBvcGFjaXR5PSIwLjMiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNSIgZmlsbD0iIzZGNkE2MSIgZmlsbC1vcGFjaXR5PSIwLjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5TYWxlbSBTdG9yZTwvdGV4dD48L3N2Zz4=';
+  const displayImage = imageError || !product.image ? fallbackImage : product.image;
 
   return (
     <div className="bg-salem-ivory min-h-screen pt-24 pb-32 selection:bg-salem-gold/20 selection:text-salem-ink">
+      <FloatingWhatsApp />
       
       {/* Breadcrumb */}
       <div className="max-w-[1600px] mx-auto px-6 mb-8 mt-4 hidden md:block">
@@ -82,15 +88,14 @@ export const ProductDetail = () => {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative lg:sticky lg:top-32 w-full h-[60vh] lg:h-[80vh] bg-salem-beige/10"
+          className="relative lg:sticky lg:top-32 w-full h-[60vh] lg:h-[80vh] bg-salem-beige/10 group overflow-hidden"
         >
-          {product.image && (
-            <img 
-              src={product.image} 
-              alt={product.name} 
-              className="w-full h-full object-cover object-center"
-            />
-          )}
+          <img 
+            src={displayImage} 
+            alt={product.name} 
+            onError={() => setImageError(true)}
+            className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-1000"
+          />
           {/* Subtle noise over image */}
            <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" style={{
             backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")'
@@ -99,11 +104,11 @@ export const ProductDetail = () => {
 
         {/* Product Info */}
         <div className="flex flex-col lg:pl-8 lg:pt-12 pb-32">
-          <SalemReveal delay={0.2} blur={false}>
+          <RevealSection delay={0.2} blur={false}>
             <span className="inline-block font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6 border border-salem-gold/30 px-4 py-1.5 rounded-full">
               {product.category}
             </span>
-            <h1 className="font-serif text-4xl md:text-6xl text-salem-ink mb-8 leading-[1.1] tracking-tight">
+            <h1 className="font-serif text-4xl md:text-6xl text-salem-ink mb-8 leading-[1.1] tracking-tight text-balance">
               {product.name}
             </h1>
             
@@ -117,31 +122,31 @@ export const ProductDetail = () => {
                 <span className="text-3xl text-salem-ink">${product.price.toLocaleString()}</span>
               )}
             </div>
-          </SalemReveal>
+          </RevealSection>
           
-          <SalemReveal delay={0.3} blur={false}>
+          <RevealSection delay={0.3} blur={false}>
             <div className="w-16 h-px bg-salem-gold mb-10"></div>
-          </SalemReveal>
+          </RevealSection>
 
-          <SalemReveal delay={0.4} blur={false}>
+          <RevealSection delay={0.4} blur={false}>
             <p className="font-sans text-sm md:text-base text-salem-muted font-light leading-relaxed mb-16 text-balance max-w-lg">
               {product.description || "Una pieza exquisita diseñada con minuciosos detalles. Creada para destacar tu estilo en cualquier ocasión, aportando un toque de elegancia atemporal."}
             </p>
-          </SalemReveal>
+          </RevealSection>
 
-          <SalemReveal delay={0.5} blur={false}>
+          <RevealSection delay={0.5} blur={false}>
             <div className="flex flex-col gap-8 mb-16 max-w-sm">
-              <SalemMagneticButton 
+              <MagneticButton 
                 href={`https://wa.me/1234567890?text=${encodeURIComponent(whatsappMsg)}`}
                 variant="primary"
                 className="w-full"
               >
                 Solicitar por WhatsApp
-              </SalemMagneticButton>
+              </MagneticButton>
             </div>
-          </SalemReveal>
+          </RevealSection>
 
-          <SalemReveal delay={0.6} blur={false}>
+          <RevealSection delay={0.6} blur={false}>
             <div className="border-t border-salem-ink/5 pt-10">
               <h3 className="font-sans text-[10px] tracking-[0.2em] uppercase text-salem-ink mb-6">Detalles Técnicos</h3>
               <ul className="flex flex-col gap-4 font-sans text-xs tracking-widest uppercase text-salem-muted font-light">
@@ -155,7 +160,7 @@ export const ProductDetail = () => {
                 </li>
               </ul>
             </div>
-          </SalemReveal>
+          </RevealSection>
         </div>
       </div>
 
@@ -163,27 +168,12 @@ export const ProductDetail = () => {
       {relatedProducts.length > 0 && (
         <div className="mt-20 border-t border-salem-gold/10 pt-32 px-6">
           <div className="max-w-[1600px] mx-auto">
-            <SalemReveal className="text-center mb-20">
+            <RevealSection className="text-center mb-20">
               <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6">Complementos</p>
               <h3 className="font-serif text-4xl md:text-5xl text-salem-ink">Piezas Similares</h3>
-            </SalemReveal>
+            </RevealSection>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-              {relatedProducts.map((p, idx) => (
-                <SalemReveal key={p.id} delay={idx * 0.15} direction="up" blur={false}>
-                  <Link to={`/product/${p.slug || p.id}`} className="group block">
-                    <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-salem-beige/10">
-                      <img src={p.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt={p.name} />
-                      <div className="absolute inset-0 border border-transparent group-hover:border-salem-gold/30 transition-colors duration-500 pointer-events-none"></div>
-                    </div>
-                    <div className="text-center px-4">
-                      <h4 className="font-serif text-lg text-salem-ink group-hover:text-salem-gold transition-colors duration-300">{p.name}</h4>
-                      <p className="font-sans text-xs tracking-widest text-salem-muted mt-2">${(p.salePrice || p.price).toLocaleString()}</p>
-                    </div>
-                  </Link>
-                </SalemReveal>
-              ))}
-            </div>
+            <ProductGrid products={relatedProducts} loading={loading} />
           </div>
         </div>
       )}
