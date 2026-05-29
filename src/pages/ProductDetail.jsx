@@ -5,17 +5,16 @@ import { MagneticButton } from '../components/ui/MagneticButton';
 import { RevealSection } from '../components/ui/RevealSection';
 import { ProductGrid } from '../components/product/ProductGrid';
 import { FloatingWhatsApp } from '../components/action/FloatingWhatsApp';
+import { ProductImage } from '../components/ui/ProductImage';
 import { useCatalog } from '../hooks/useCatalog';
 
 export const ProductDetail = () => {
   const { id } = useParams();
   const { products, loading } = useCatalog();
   const [product, setProduct] = useState(null);
-  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setImageError(false);
   }, [id]);
 
   useEffect(() => {
@@ -35,13 +34,13 @@ export const ProductDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-salem-ivory pt-32 px-6 flex justify-center">
-        <div className="animate-pulse w-full max-w-[1600px] grid grid-cols-1 lg:grid-cols-2 gap-16">
-           <div className="aspect-[4/5] bg-salem-beige/20"></div>
+        <div className="w-full max-w-[1600px] grid grid-cols-1 lg:grid-cols-2 gap-16 animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-salem-beige/5 to-transparent">
+           <div className="aspect-[4/5] bg-salem-beige/20 rounded-sm"></div>
            <div className="space-y-8 pt-12 lg:pl-12">
-             <div className="h-4 w-32 bg-salem-beige/20"></div>
-             <div className="h-16 w-3/4 bg-salem-beige/20"></div>
-             <div className="h-8 w-40 bg-salem-beige/20"></div>
-             <div className="h-40 w-full bg-salem-beige/20 mt-12"></div>
+             <div className="h-4 w-32 bg-salem-beige/20 rounded-sm"></div>
+             <div className="h-16 w-3/4 bg-salem-beige/20 rounded-sm"></div>
+             <div className="h-8 w-40 bg-salem-beige/20 rounded-sm"></div>
+             <div className="h-40 w-full bg-salem-beige/20 mt-12 rounded-sm"></div>
            </div>
         </div>
       </div>
@@ -60,9 +59,9 @@ export const ProductDetail = () => {
     );
   }
 
+  // Use a generic WhatsApp number if none was provided, this can be updated later in config
+  const whatsappNumber = "1234567890";
   const whatsappMsg = `Hola, estoy interesada en la pieza ${product.name} (SKU: ${product.sku || product.id}) de Salem Store.`;
-  const fallbackImage = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjRThEREM4IiBvcGFjaXR5PSIwLjMiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNSIgZmlsbD0iIzZGNkE2MSIgZmlsbC1vcGFjaXR5PSIwLjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5TYWxlbSBTdG9yZTwvdGV4dD48L3N2Zz4=';
-  const displayImage = imageError || !product.image ? fallbackImage : product.image;
 
   return (
     <div className="bg-salem-ivory min-h-screen pt-24 pb-32 selection:bg-salem-gold/20 selection:text-salem-ink">
@@ -71,11 +70,11 @@ export const ProductDetail = () => {
       {/* Breadcrumb */}
       <div className="max-w-[1600px] mx-auto px-6 mb-8 mt-4 hidden md:block">
         <nav className="font-sans text-[9px] tracking-[0.3em] uppercase text-salem-muted flex gap-3">
-          <Link to="/" className="hover:text-salem-ink transition-colors">Inicio</Link>
+          <Link to="/" className="hover:text-salem-ink transition-colors pressable">Inicio</Link>
           <span>/</span>
-          <Link to="/catalog" className="hover:text-salem-ink transition-colors">Colección</Link>
+          <Link to="/catalog" className="hover:text-salem-ink transition-colors pressable">Colección</Link>
           <span>/</span>
-          <Link to={`/catalog?category=${product.category}`} className="hover:text-salem-ink transition-colors">{product.category}</Link>
+          <Link to={`/catalog?category=${encodeURIComponent(product.category)}`} className="hover:text-salem-ink transition-colors pressable">{product.category}</Link>
           <span>/</span>
           <span className="text-salem-ink">{product.name}</span>
         </nav>
@@ -83,28 +82,24 @@ export const ProductDetail = () => {
 
       <div className="max-w-[1600px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
         
-        {/* Massive Sticky/Scrolling Image */}
+        {/* Massive Sticky Image */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative lg:sticky lg:top-32 w-full h-[60vh] lg:h-[80vh] bg-salem-beige/10 group overflow-hidden"
+          initial={{ opacity: 0, scale: 0.98, y: 24 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+          className="relative lg:sticky lg:top-32 w-full h-[60vh] lg:h-[80vh] group overflow-hidden bg-salem-beige/5 p-1.5 rounded-sm border border-salem-ink/5"
         >
-          <img 
-            src={displayImage} 
-            alt={product.name} 
-            onError={() => setImageError(true)}
-            className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-1000"
+          <ProductImage 
+            src={product.image} 
+            alt={product.name}
+            aspect="aspect-auto h-full w-full"
+            className="group-hover:scale-[1.03] transition-transform duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]"
           />
-          {/* Subtle noise over image */}
-           <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" style={{
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")'
-          }}></div>
         </motion.div>
 
         {/* Product Info */}
         <div className="flex flex-col lg:pl-8 lg:pt-12 pb-32">
-          <RevealSection delay={0.2} blur={false}>
+          <RevealSection delay={0.1} blur={false}>
             <span className="inline-block font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6 border border-salem-gold/30 px-4 py-1.5 rounded-full">
               {product.category}
             </span>
@@ -124,29 +119,30 @@ export const ProductDetail = () => {
             </div>
           </RevealSection>
           
-          <RevealSection delay={0.3} blur={false}>
+          <RevealSection delay={0.2} blur={false}>
             <div className="w-16 h-px bg-salem-gold mb-10"></div>
           </RevealSection>
 
-          <RevealSection delay={0.4} blur={false}>
+          <RevealSection delay={0.3} blur={false}>
             <p className="font-sans text-sm md:text-base text-salem-muted font-light leading-relaxed mb-16 text-balance max-w-lg">
               {product.description || "Una pieza exquisita diseñada con minuciosos detalles. Creada para destacar tu estilo en cualquier ocasión, aportando un toque de elegancia atemporal."}
             </p>
           </RevealSection>
 
-          <RevealSection delay={0.5} blur={false}>
+          <RevealSection delay={0.4} blur={false}>
             <div className="flex flex-col gap-8 mb-16 max-w-sm">
               <MagneticButton 
-                href={`https://wa.me/1234567890?text=${encodeURIComponent(whatsappMsg)}`}
+                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsg)}`}
                 variant="primary"
                 className="w-full"
+                showArrow
               >
                 Solicitar por WhatsApp
               </MagneticButton>
             </div>
           </RevealSection>
 
-          <RevealSection delay={0.6} blur={false}>
+          <RevealSection delay={0.5} blur={false}>
             <div className="border-t border-salem-ink/5 pt-10">
               <h3 className="font-sans text-[10px] tracking-[0.2em] uppercase text-salem-ink mb-6">Detalles Técnicos</h3>
               <ul className="flex flex-col gap-4 font-sans text-xs tracking-widest uppercase text-salem-muted font-light">
@@ -164,7 +160,7 @@ export const ProductDetail = () => {
         </div>
       </div>
 
-      {/* Lookbook / Related Products */}
+      {/* Related Products */}
       {relatedProducts.length > 0 && (
         <div className="mt-20 border-t border-salem-gold/10 pt-32 px-6">
           <div className="max-w-[1600px] mx-auto">

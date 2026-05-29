@@ -5,15 +5,15 @@ export const RevealSection = ({
   children, 
   direction = 'up', 
   delay = 0, 
-  duration = 0.8,
+  duration = 0.7,
   blur = true,
   className = ''
 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-10%" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
-  const yOffset = direction === 'up' ? 40 : direction === 'down' ? -40 : 0;
-  const xOffset = direction === 'left' ? 40 : direction === 'right' ? -40 : 0;
+  const yOffset = direction === 'up' ? 24 : direction === 'down' ? -24 : 0;
+  const xOffset = direction === 'left' ? 24 : direction === 'right' ? -24 : 0;
 
   return (
     <motion.div
@@ -22,18 +22,20 @@ export const RevealSection = ({
         opacity: 0, 
         y: yOffset, 
         x: xOffset,
-        filter: blur ? 'blur(10px)' : 'none'
+        scale: 0.98,
+        filter: blur ? 'blur(6px)' : 'none'
       }}
       animate={{ 
         opacity: isInView ? 1 : 0, 
         y: isInView ? 0 : yOffset,
         x: isInView ? 0 : xOffset,
-        filter: isInView ? 'blur(0px)' : blur ? 'blur(10px)' : 'none'
+        scale: isInView ? 1 : 0.98,
+        filter: isInView ? 'blur(0px)' : blur ? 'blur(6px)' : 'none'
       }}
       transition={{ 
         duration, 
         delay, 
-        ease: [0.16, 1, 0.3, 1] 
+        ease: [0.23, 1, 0.32, 1]
       }}
       className={className}
     >

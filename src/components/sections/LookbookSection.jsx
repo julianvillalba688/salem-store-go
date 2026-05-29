@@ -1,51 +1,49 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { RevealSection } from '../ui/RevealSection';
+import { ProductImage } from '../ui/ProductImage';
 
-export const LookbookSection = ({ lookbookProducts }) => {
-  if (!lookbookProducts || lookbookProducts.length < 3) return null;
+export const LookbookSection = ({ products }) => {
+  if (!products || products.length < 3) return null;
+  
+  const containerRef = useRef(null);
 
   return (
-    <section className="py-32 md:py-48 px-6 bg-salem-ivory">
-      <div className="max-w-[1400px] mx-auto">
-        <RevealSection className="text-center mb-24">
-          <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6">Inspiración</p>
-          <h2 className="font-serif text-4xl md:text-6xl text-salem-ink">Lookbook Salem</h2>
+    <section className="py-28 md:py-40 px-6 bg-salem-ink text-salem-ivory overflow-hidden">
+      <div className="max-w-[1600px] mx-auto">
+        <RevealSection className="mb-16">
+          <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-salem-gold mb-4">Selección curada</p>
+          <h2 className="font-serif text-4xl md:text-5xl text-white tracking-tight">Lookbook</h2>
         </RevealSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10">
-          {/* Big Feature */}
-          <div className="md:col-span-7">
-            <RevealSection direction="up" blur={false}>
-              <Link to={`/product/${lookbookProducts[0].slug || lookbookProducts[0].id}`} className="block relative group overflow-hidden bg-salem-beige/20 aspect-[4/5] md:aspect-[16/10]">
-                {lookbookProducts[0].image && (
-                  <img src={lookbookProducts[0].image} alt={lookbookProducts[0].name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
-                )}
-                <div className="absolute inset-0 bg-salem-ink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                   <span className="bg-salem-ivory text-salem-ink px-8 py-3 text-[10px] tracking-widest uppercase font-sans">Ver pieza</span>
+        {/* Horizontal scroll gallery — different layout from featured grid */}
+        <div ref={containerRef} className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar pb-4 snap-x snap-mandatory -mx-6 px-6">
+          {products.map((product, idx) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: idx * 0.06, ease: [0.23, 1, 0.32, 1] }}
+              className="flex-shrink-0 snap-start"
+              style={{ width: idx === 0 ? 'min(500px, 75vw)' : 'min(320px, 65vw)' }}
+            >
+              <Link to={`/product/${product.slug || product.id}`} className="group block relative overflow-hidden">
+                <ProductImage 
+                  src={product.image} 
+                  alt={product.name}
+                  aspect={idx === 0 ? 'aspect-[4/5]' : 'aspect-[3/4]'}
+                  className="group-hover:scale-[1.03] transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-salem-ink/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
+                <div className="absolute bottom-4 left-4 right-4 z-20 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400" style={{ transitionTimingFunction: 'var(--ease-out-strong)' }}>
+                  <p className="font-serif text-sm text-white mb-1">{product.name}</p>
+                  <span className="font-sans text-[8px] tracking-widest uppercase text-salem-gold">{product.category}</span>
                 </div>
               </Link>
-            </RevealSection>
-          </div>
-          
-          {/* Double Stack */}
-          <div className="md:col-span-5 flex flex-col gap-6 md:gap-10">
-             {lookbookProducts.slice(1, 3).map((product, idx) => (
-                <RevealSection key={product.id} direction="up" delay={0.2 * (idx+1)} blur={false} className="h-full">
-                  <Link to={`/product/${product.slug || product.id}`} className="block relative group overflow-hidden bg-salem-beige/20 h-full aspect-[4/5] md:aspect-auto">
-                    {product.image && (
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
-                    )}
-                    <div className="absolute bottom-6 left-6 z-10">
-                      <span className="bg-salem-ivory text-salem-ink px-4 py-2 text-[9px] tracking-widest uppercase font-sans shadow-premium">
-                        {product.name}
-                      </span>
-                    </div>
-                  </Link>
-                </RevealSection>
-             ))}
-          </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
