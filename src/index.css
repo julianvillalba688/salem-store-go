@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,10 +6,10 @@
 
 @layer base {
   :root {
-    --salem-black: #10141B;
-    --salem-black-soft: #181C24;
+    --salem-black: #0E1117;
+    --salem-ink: #151922;
     --salem-gold: #B99A55;
-    --salem-gold-light: #D7C18A;
+    --salem-gold-soft: #D7C18A;
     --salem-cream: #F8F4EA;
     --salem-ivory: #FFFDF7;
     --salem-beige: #E8DDC8;
@@ -21,12 +21,23 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
   body {
-    @apply bg-salem-cream text-salem-black font-sans;
-    /* Soft noise texture for premium feel */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+    @apply bg-salem-ivory text-salem-black font-sans overflow-x-hidden;
+    /* High-end subtle grain overlay */
+    position: relative;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -34,7 +45,7 @@
   }
 
   ::selection {
-    @apply bg-salem-gold/20 text-salem-black;
+    @apply bg-salem-gold/30 text-salem-black;
   }
 }
 
@@ -50,22 +61,38 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .clip-diagonal {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 5vw));
+  }
 }
 
-/* Custom minimal scrollbar */
+/* Elegant minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  @apply bg-salem-ivory;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-salem-muted/30 rounded-full;
+  @apply bg-salem-gold-soft/50 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-salem-gold/50;
+  @apply bg-salem-gold;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

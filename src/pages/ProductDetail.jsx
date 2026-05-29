@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { SalemButton } from '../components/ui/SalemButton';
+import { SalemMagneticButton } from '../components/ui/SalemMagneticButton';
+import { SalemReveal } from '../components/ui/SalemReveal';
 import { useCatalog } from '../hooks/useCatalog';
 
 export const ProductDetail = () => {
@@ -10,12 +11,11 @@ export const ProductDetail = () => {
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [id]);
 
   useEffect(() => {
     if (!loading && products.length > 0) {
-      // Allow finding by slug or id
       const found = products.find(p => p.slug === id || p.id === id);
       setProduct(found);
     }
@@ -25,19 +25,19 @@ export const ProductDetail = () => {
     if (!product) return [];
     return products
       .filter(p => p.category === product.category && p.id !== product.id && p.image)
-      .slice(0, 3);
+      .slice(0, 4);
   }, [product, products]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-salem-cream pt-32 px-6 flex justify-center">
-        <div className="animate-pulse w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-16">
-           <div className="aspect-[3/4] bg-salem-beige/30"></div>
-           <div className="space-y-6 pt-12">
-             <div className="h-4 w-24 bg-salem-beige/30"></div>
-             <div className="h-12 w-3/4 bg-salem-beige/30"></div>
-             <div className="h-8 w-32 bg-salem-beige/30"></div>
-             <div className="h-32 w-full bg-salem-beige/30 mt-12"></div>
+      <div className="min-h-screen bg-salem-ivory pt-32 px-6 flex justify-center">
+        <div className="animate-pulse w-full max-w-[1600px] grid grid-cols-1 lg:grid-cols-2 gap-16">
+           <div className="aspect-[4/5] bg-salem-beige/20"></div>
+           <div className="space-y-8 pt-12 lg:pl-12">
+             <div className="h-4 w-32 bg-salem-beige/20"></div>
+             <div className="h-16 w-3/4 bg-salem-beige/20"></div>
+             <div className="h-8 w-40 bg-salem-beige/20"></div>
+             <div className="h-40 w-full bg-salem-beige/20 mt-12"></div>
            </div>
         </div>
       </div>
@@ -46,11 +46,12 @@ export const ProductDetail = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-salem-cream text-salem-black">
-        <h1 className="font-serif text-3xl mb-6">Pieza no encontrada</h1>
-        <Link to="/catalog" className="text-salem-gold hover:text-salem-black transition-colors font-sans text-xs tracking-widest uppercase border-b border-salem-gold pb-1">
-          Volver a la colección
-        </Link>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-salem-ivory text-salem-ink px-6 text-center">
+        <h1 className="font-serif text-5xl md:text-7xl mb-8">Pieza inaccesible</h1>
+        <p className="font-sans text-salem-muted font-light max-w-md mx-auto mb-12">La pieza que buscas ya no se encuentra en nuestra colección actual.</p>
+        <SalemMagneticButton href="/catalog" variant="outline">
+          Volver a la Colección
+        </SalemMagneticButton>
       </div>
     );
   }
@@ -59,129 +60,133 @@ export const ProductDetail = () => {
   const whatsappMsg = `Hola, estoy interesada en el producto ${product.name} (SKU: ${product.sku || product.id}) de Salem Store.`;
 
   return (
-    <div className="bg-salem-cream min-h-screen pt-24 pb-32">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Breadcrumb */}
-        <nav className="font-sans text-[10px] tracking-widest uppercase text-salem-muted mb-12 flex gap-2">
-          <Link to="/" className="hover:text-salem-black transition-colors">Inicio</Link>
+    <div className="bg-salem-ivory min-h-screen pt-24 pb-32 selection:bg-salem-gold/20 selection:text-salem-ink">
+      
+      {/* Breadcrumb */}
+      <div className="max-w-[1600px] mx-auto px-6 mb-8 mt-4 hidden md:block">
+        <nav className="font-sans text-[9px] tracking-[0.3em] uppercase text-salem-muted flex gap-3">
+          <Link to="/" className="hover:text-salem-ink transition-colors">Inicio</Link>
           <span>/</span>
-          <Link to="/catalog" className="hover:text-salem-black transition-colors">Colección</Link>
+          <Link to="/catalog" className="hover:text-salem-ink transition-colors">Colección</Link>
           <span>/</span>
-          <span className="text-salem-black">{product.name}</span>
+          <Link to={`/catalog?category=${product.category}`} className="hover:text-salem-ink transition-colors">{product.category}</Link>
+          <span>/</span>
+          <span className="text-salem-ink">{product.name}</span>
         </nav>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-24 items-start">
-          {/* Image Gallery */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="relative aspect-[3/4] bg-salem-ivory"
-          >
-             <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
-              {product.isOffer && (
-                <span className="bg-salem-gold text-white text-[10px] uppercase tracking-widest px-4 py-2 font-sans">
-                  Oferta
-                </span>
-              )}
-              {product.isNew && (
-                <span className="bg-salem-black text-white text-[10px] uppercase tracking-widest px-4 py-2 font-sans">
-                  Nuevo
-                </span>
-              )}
-            </div>
-            {product.image && (
-              <img 
-                src={product.image} 
-                alt={product.name} 
-                className="w-full h-full object-cover"
-              />
-            )}
-          </motion.div>
+      <div className="max-w-[1600px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+        
+        {/* Massive Sticky/Scrolling Image */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          className="relative lg:sticky lg:top-32 w-full h-[60vh] lg:h-[80vh] bg-salem-beige/10"
+        >
+          {product.image && (
+            <img 
+              src={product.image} 
+              alt={product.name} 
+              className="w-full h-full object-cover object-center"
+            />
+          )}
+          {/* Subtle noise over image */}
+           <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" style={{
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")'
+          }}></div>
+        </motion.div>
 
-          {/* Details */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col sticky top-32"
-          >
-            <span className="font-sans text-[10px] tracking-[0.2em] uppercase text-salem-gold mb-4">
+        {/* Product Info */}
+        <div className="flex flex-col lg:pl-8 lg:pt-12 pb-32">
+          <SalemReveal delay={0.2} blur={false}>
+            <span className="inline-block font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6 border border-salem-gold/30 px-4 py-1.5 rounded-full">
               {product.category}
             </span>
-            <h1 className="font-serif text-4xl md:text-5xl text-salem-black mb-6 leading-tight">
+            <h1 className="font-serif text-4xl md:text-6xl text-salem-ink mb-8 leading-[1.1] tracking-tight">
               {product.name}
             </h1>
             
-            <div className="flex items-center gap-4 mb-8 font-sans">
+            <div className="flex items-end gap-4 mb-10 font-sans tracking-wide">
               {product.salePrice ? (
                 <>
-                  <span className="text-2xl text-salem-gold font-medium">${product.salePrice.toLocaleString()}</span>
-                  <span className="text-salem-muted line-through text-sm">${product.price.toLocaleString()}</span>
+                  <span className="text-3xl text-salem-gold font-medium">${product.salePrice.toLocaleString()}</span>
+                  <span className="text-salem-muted line-through text-lg mb-1">${product.price.toLocaleString()}</span>
                 </>
               ) : (
-                <span className="text-2xl text-salem-black">${product.price.toLocaleString()}</span>
+                <span className="text-3xl text-salem-ink">${product.price.toLocaleString()}</span>
               )}
             </div>
-            
-            <div className="w-12 h-px bg-salem-gold/30 mb-8"></div>
+          </SalemReveal>
+          
+          <SalemReveal delay={0.3} blur={false}>
+            <div className="w-16 h-px bg-salem-gold mb-10"></div>
+          </SalemReveal>
 
-            <p className="font-sans text-sm text-salem-muted font-light leading-relaxed mb-12">
-              {product.description || "Pieza elegante diseñada con detalles meticulosos para acompañar tus mejores momentos."}
+          <SalemReveal delay={0.4} blur={false}>
+            <p className="font-sans text-sm md:text-base text-salem-muted font-light leading-relaxed mb-16 text-balance max-w-lg">
+              {product.description || "Una pieza exquisita diseñada con minuciosos detalles. Creada para destacar tu estilo en cualquier ocasión, aportando un toque de elegancia atemporal."}
             </p>
+          </SalemReveal>
 
-            <div className="flex flex-col gap-6 font-sans text-[10px] tracking-widest uppercase mb-12">
-              <div className="flex items-center gap-4">
-                <span className="text-salem-black w-24">Estado:</span>
-                <span className="text-salem-muted font-light">{product.status || 'Disponible'}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-salem-black w-24">SKU:</span>
-                <span className="text-salem-muted font-light">{product.sku || product.id}</span>
-              </div>
+          <SalemReveal delay={0.5} blur={false}>
+            <div className="flex flex-col gap-8 mb-16 max-w-sm">
+              <SalemMagneticButton 
+                href={`https://wa.me/1234567890?text=${encodeURIComponent(whatsappMsg)}`}
+                variant="primary"
+                className="w-full"
+              >
+                Solicitar por WhatsApp
+              </SalemMagneticButton>
             </div>
+          </SalemReveal>
 
-            <SalemButton 
-              href={`https://wa.me/1234567890?text=${encodeURIComponent(whatsappMsg)}`}
-              variant="primary"
-              className="w-full sm:w-auto"
-            >
-              Pedir por WhatsApp
-            </SalemButton>
-
-            <div className="mt-12 pt-8 border-t border-salem-black/5 flex flex-col gap-4 text-[10px] font-sans tracking-widest uppercase text-salem-muted">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-1 bg-salem-gold rounded-full"></div>
-                Atención Personalizada
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-1 bg-salem-gold rounded-full"></div>
-                Envíos Seguros
-              </div>
+          <SalemReveal delay={0.6} blur={false}>
+            <div className="border-t border-salem-ink/5 pt-10">
+              <h3 className="font-sans text-[10px] tracking-[0.2em] uppercase text-salem-ink mb-6">Detalles Técnicos</h3>
+              <ul className="flex flex-col gap-4 font-sans text-xs tracking-widest uppercase text-salem-muted font-light">
+                <li className="flex items-center justify-between border-b border-salem-ink/5 pb-2">
+                  <span>Disponibilidad</span>
+                  <span className="text-salem-ink font-medium">{product.stock > 0 ? 'En Stock' : 'Agotado'}</span>
+                </li>
+                <li className="flex items-center justify-between border-b border-salem-ink/5 pb-2">
+                  <span>SKU</span>
+                  <span className="text-salem-ink font-medium">{product.sku || product.id}</span>
+                </li>
+              </ul>
             </div>
-          </motion.div>
+          </SalemReveal>
         </div>
+      </div>
 
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
-          <div className="mt-40 border-t border-salem-gold/10 pt-20">
-            <h3 className="font-serif text-3xl text-salem-black mb-12 text-center">Te podría interesar</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {relatedProducts.map(p => (
-                <div key={p.id} className="scale-95 hover:scale-100 transition-transform duration-500">
-                  <Link to={`/product/${p.slug || p.id}`} className="block relative aspect-[3/4] overflow-hidden mb-4">
-                    <img src={p.image} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" alt={p.name} />
+      {/* Lookbook / Related Products */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-20 border-t border-salem-gold/10 pt-32 px-6">
+          <div className="max-w-[1600px] mx-auto">
+            <SalemReveal className="text-center mb-20">
+              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6">Complementos</p>
+              <h3 className="font-serif text-4xl md:text-5xl text-salem-ink">Piezas Similares</h3>
+            </SalemReveal>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+              {relatedProducts.map((p, idx) => (
+                <SalemReveal key={p.id} delay={idx * 0.15} direction="up" blur={false}>
+                  <Link to={`/product/${p.slug || p.id}`} className="group block">
+                    <div className="relative aspect-[3/4] overflow-hidden mb-6 bg-salem-beige/10">
+                      <img src={p.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt={p.name} />
+                      <div className="absolute inset-0 border border-transparent group-hover:border-salem-gold/30 transition-colors duration-500 pointer-events-none"></div>
+                    </div>
+                    <div className="text-center px-4">
+                      <h4 className="font-serif text-lg text-salem-ink group-hover:text-salem-gold transition-colors duration-300">{p.name}</h4>
+                      <p className="font-sans text-xs tracking-widest text-salem-muted mt-2">${(p.salePrice || p.price).toLocaleString()}</p>
+                    </div>
                   </Link>
-                  <div className="text-center">
-                    <h4 className="font-serif text-lg text-salem-black hover:text-salem-gold transition-colors">{p.name}</h4>
-                    <p className="font-sans text-xs text-salem-muted mt-2">${(p.salePrice || p.price).toLocaleString()}</p>
-                  </div>
-                </div>
+                </SalemReveal>
               ))}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
