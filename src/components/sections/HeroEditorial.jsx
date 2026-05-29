@@ -1,81 +1,69 @@
 import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { MagneticButton } from '../ui/MagneticButton';
 import { RevealSection } from '../ui/RevealSection';
-import { AnimatedSparkles } from '../ui/AnimatedSparkles';
+import { useCatalog } from '../../hooks/useCatalog';
+import { ProductImage } from '../ui/ProductImage';
 
 export const HeroEditorial = () => {
-  const { scrollY } = useScroll();
-  const yHero = useTransform(scrollY, [0, 800], [0, 200]);
-  const opacityHero = useTransform(scrollY, [0, 600], [1, 0]);
+  const { getHighValue } = useCatalog();
+  // Grab a strong image for the hero right column
+  const heroProducts = getHighValue(1);
+  const heroProduct = heroProducts.length > 0 ? heroProducts[0] : null;
 
   return (
-    <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden bg-salem-ink">
-      <motion.div style={{ y: yHero, opacity: opacityHero }} className="absolute inset-0 z-0">
-        {/* Pure dark gradient — no random product image */}
-        <div className="absolute inset-0 bg-gradient-to-br from-salem-ink via-salem-black to-salem-ink" />
-        {/* Radial gold accent */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-salem-gold/[0.04] rounded-full blur-3xl pointer-events-none" />
-        {/* Noise */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" style={{
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")'
-        }} />
-      </motion.div>
+    <section className="relative min-h-[100dvh] flex items-center bg-salem-cream overflow-hidden pt-20">
+      <div className="max-w-[1400px] mx-auto w-full px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        
+        {/* Left: Content */}
+        <div className="flex flex-col items-start pt-12 lg:pt-0 z-10">
+          <RevealSection delay={0.1}>
+            <span className="font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6 block">
+              Nueva Colección
+            </span>
+          </RevealSection>
+          
+          <RevealSection delay={0.3}>
+            <h1 className="font-serif text-5xl md:text-7xl lg:text-[80px] leading-[1.05] text-salem-ink tracking-tight mb-8">
+              La esencia <br className="hidden md:block" />
+              <span className="italic text-salem-gold">de lo sutil</span>
+            </h1>
+          </RevealSection>
 
-      <AnimatedSparkles count={6} className="z-[1] mix-blend-screen opacity-40" />
+          <RevealSection delay={0.5}>
+            <p className="font-sans text-sm md:text-base text-salem-muted max-w-md font-light leading-relaxed mb-10 text-balance">
+              Joyería elegante y femenina diseñada para resaltar tu estilo en cada momento. Piezas atemporales con un nivel de detalle excepcional.
+            </p>
+          </RevealSection>
 
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto flex flex-col items-center">
-        {/* Logo — sole visual anchor */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, filter: 'blur(8px)' }}
-          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-          className="mb-10 relative"
-        >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-salem-gold/[0.06] blur-3xl rounded-full pointer-events-none" />
-          <img src="/logo_salem_store.png" alt="Salem Store" className="h-24 md:h-44 object-contain mx-auto relative z-10" style={{ filter: 'brightness(0) invert(1)' }} />
-        </motion.div>
-
-        <RevealSection delay={0.3}>
-          <p className="font-sans text-[10px] md:text-xs tracking-[0.4em] uppercase text-salem-gold mb-6">
-            Detalles que marcan la diferencia
-          </p>
-        </RevealSection>
-
-        <RevealSection delay={0.5}>
-          <p className="font-sans text-sm md:text-base text-salem-beige/80 max-w-lg mx-auto mb-12 font-light leading-relaxed text-balance">
-            Accesorios elegantes para resaltar tu esencia, tu estilo y tu feminidad.
-          </p>
-        </RevealSection>
-
-        <RevealSection delay={0.7}>
-          <div className="flex flex-col sm:flex-row gap-5 items-center">
-            <MagneticButton href="/catalog" variant="secondary" showArrow>
-              Explorar Colección
-            </MagneticButton>
-            <MagneticButton href="https://wa.me/1234567890" variant="ghost" className="text-salem-beige/70 hover:text-salem-gold">
-              Pedir por WhatsApp
-            </MagneticButton>
-          </div>
-        </RevealSection>
-      </div>
-
-      {/* Scroll Indicator */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
-      >
-        <span className="font-sans text-[7px] tracking-[0.3em] uppercase text-salem-gold/50">Scroll</span>
-        <div className="w-px h-12 bg-salem-gold/15 overflow-hidden relative">
-          <motion.div 
-            animate={{ y: ['-100%', '100%'] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-            className="absolute top-0 left-0 w-full h-1/3 bg-salem-gold/60"
-          />
+          <RevealSection delay={0.7}>
+            <div className="flex flex-col sm:flex-row gap-5 items-center w-full sm:w-auto">
+              <MagneticButton href="/catalog" variant="primary" showArrow className="w-full sm:w-auto">
+                Ver Catálogo
+              </MagneticButton>
+              <MagneticButton href="https://wa.me/1234567890" variant="outline" className="w-full sm:w-auto border-salem-ink/20 text-salem-ink">
+                Pedir por WhatsApp
+              </MagneticButton>
+            </div>
+          </RevealSection>
         </div>
-      </motion.div>
+
+        {/* Right: Image Composition */}
+        <div className="relative w-full h-[50vh] lg:h-[80vh] flex items-center justify-center">
+          <RevealSection delay={0.4} className="w-full h-full relative" direction="left">
+             <div className="absolute inset-0 bg-salem-ivory rounded-tl-full rounded-tr-[100px] rounded-br-[100px] rounded-bl-sm overflow-hidden p-2 shadow-premium">
+                <div className="w-full h-full rounded-tl-full rounded-tr-[100px] rounded-br-[100px] rounded-bl-sm overflow-hidden">
+                  <ProductImage 
+                    src={heroProduct?.image} 
+                    alt="Colección Salem Store"
+                    aspect="aspect-auto h-full w-full" 
+                    className="scale-105 hover:scale-110 transition-transform duration-[2s] ease-out-strong"
+                  />
+                </div>
+             </div>
+          </RevealSection>
+        </div>
+      </div>
     </section>
   );
 };

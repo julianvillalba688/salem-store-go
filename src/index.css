@@ -15,10 +15,7 @@
     --salem-beige: #E8DDC8;
     --salem-nude: #D9BFA3;
     --salem-muted: #6F6A61;
-    /* Emil-skill easing tokens */
     --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
-    --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
-    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   html {
@@ -29,18 +26,7 @@
   }
   
   body {
-    @apply bg-salem-ivory text-salem-black font-sans overflow-x-hidden;
-    position: relative;
-  }
-
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    @apply bg-salem-ivory text-salem-ink font-sans overflow-x-hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -48,7 +34,7 @@
   }
 
   ::selection {
-    @apply bg-salem-gold/30 text-salem-black;
+    @apply bg-salem-gold/30 text-salem-ink;
   }
 }
 
@@ -58,32 +44,14 @@
   }
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .clip-diagonal {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 5vw));
-  }
 }
 
-/* Shimmer animation for ProductImage skeleton */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-/* Emil: active states on pressable elements */
-@media (hover: hover) and (pointer: fine) {
-  .pressable:active {
-    transform: scale(0.97);
-    transition: transform 100ms var(--ease-out-strong);
-  }
-}
-
-/* Elegant minimal scrollbar */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { @apply bg-salem-ivory; }
-::-webkit-scrollbar-thumb { @apply bg-salem-gold-soft/50 rounded-full; }
-::-webkit-scrollbar-thumb:hover { @apply bg-salem-gold; }
-
-/* Emil: reduced motion — opacity + color OK, remove movement */
+/* Reduced motion fallback */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
     animation-duration: 0.01ms !important;

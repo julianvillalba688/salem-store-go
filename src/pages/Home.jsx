@@ -6,19 +6,17 @@ import { LookbookSection } from '../components/sections/LookbookSection';
 import { OccasionSection } from '../components/sections/OccasionSection';
 import { BenefitsSection } from '../components/sections/BenefitsSection';
 import { RevealSection } from '../components/ui/RevealSection';
-import { GoldDivider } from '../components/ui/GoldDivider';
 import { ProductGrid } from '../components/product/ProductGrid';
-import { MagneticButton } from '../components/ui/MagneticButton';
 import { FloatingWhatsApp } from '../components/action/FloatingWhatsApp';
 import { useCatalog } from '../hooks/useCatalog';
+import { Link } from 'react-router-dom';
 
 export const Home = () => {
-  const { products, loading, getHighValue, getOffers, getCategoryCovers } = useCatalog();
+  const { loading, getHighValue, getOffers, getCategoryCovers } = useCatalog();
   
-  // Intentional curation — not random slicing
-  const featuredProducts = getHighValue(4);
+  const featuredProducts = getHighValue(3); // 3 for a clean 3-col grid
   const lookbookProducts = getOffers().slice(0, 6);
-  const brandStoryProducts = getHighValue(8).slice(-2); // 2 aspirational products
+  const brandStoryProducts = getHighValue(8).slice(-2);
   const categoryCovers = getCategoryCovers();
 
   return (
@@ -31,51 +29,37 @@ export const Home = () => {
       {/* 2. Category strip */}
       <CategoryShowcase categoryCovers={categoryCovers} />
 
-      {/* 3. Featured Collection — dark section */}
-      <section className="py-28 md:py-40 px-6 bg-salem-ink relative overflow-hidden">
-        <div className="max-w-[1600px] mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-6">
+      {/* 3. Featured Collection — clean 3-col grid on ivory */}
+      <section className="py-24 md:py-32 px-6 bg-salem-ivory relative overflow-hidden">
+        <div className="max-w-[1280px] mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6 text-center md:text-left">
             <RevealSection>
-              <h2 className="font-serif text-4xl md:text-5xl text-white tracking-tight">
-                Selección<br/><span className="text-salem-gold">Premium</span>
+              <h2 className="font-serif text-3xl md:text-4xl text-salem-ink tracking-tight">
+                Selección Premium
               </h2>
             </RevealSection>
-            <RevealSection delay={0.15}>
-              <MagneticButton href="/catalog" variant="outline" className="border-salem-gold/30 text-salem-gold hover:border-salem-gold" showArrow>
-                Colección Completa
-              </MagneticButton>
+            <RevealSection delay={0.1}>
+              <Link to="/catalog" className="inline-flex items-center gap-2 font-sans text-[10px] tracking-widest uppercase text-salem-ink hover:text-salem-gold transition-colors pb-1 border-b border-salem-ink/20 hover:border-salem-gold">
+                Ver todo <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </Link>
             </RevealSection>
           </div>
           
-          <div className="[&_h3]:text-white [&_span]:text-white/70 [&_.text-salem-ink]:text-white">
-            <ProductGrid products={featuredProducts} loading={loading} />
-          </div>
+          <ProductGrid products={featuredProducts} loading={loading} columns={3} />
         </div>
       </section>
       
-      {/* 4. Brand Story — ivory section */}
-      <BrandStorySection products={brandStoryProducts} />
-
-      {/* 5. Occasions — ivory section with real category cards */}
+      {/* 4. Occasions */}
       <OccasionSection categoryCovers={categoryCovers} />
 
-      {/* 6. Lookbook — dark horizontal scroll gallery */}
+      {/* 5. Brand Story */}
+      <BrandStorySection products={brandStoryProducts} />
+
+      {/* 6. Lookbook */}
       <LookbookSection products={lookbookProducts} />
 
-      {/* 7. Benefits — ivory section */}
+      {/* 7. Benefits */}
       <BenefitsSection />
-
-      {/* 8. Quote CTA */}
-      <section className="py-24 md:py-32 px-6 bg-salem-ivory border-t border-salem-ink/5">
-        <div className="max-w-[900px] mx-auto text-center">
-          <RevealSection>
-            <p className="font-serif text-2xl md:text-4xl text-salem-ink tracking-tight leading-snug mb-4 text-balance">
-              "La elegancia es la única belleza que nunca se desvanece."
-            </p>
-            <span className="font-sans text-[9px] tracking-widest uppercase text-salem-muted">Audrey Hepburn</span>
-          </RevealSection>
-        </div>
-      </section>
     </div>
   );
 };

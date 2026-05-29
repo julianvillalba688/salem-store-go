@@ -24,30 +24,8 @@ export default {
         sans: ['"Montserrat"', 'sans-serif'],
       },
       boxShadow: {
-        'premium': '0 30px 60px -12px rgba(14, 17, 23, 0.15)',
-        'premium-hover': '0 40px 80px -15px rgba(14, 17, 23, 0.25)',
-        'gold-glow': '0 10px 40px -10px rgba(185, 154, 85, 0.4)',
-      },
-      animation: {
-        'float': 'float 8s ease-in-out infinite',
-        'float-slow': 'float 12s ease-in-out infinite',
-        'fade-in': 'fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'spin-slow': 'spin 20s linear infinite',
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        fadeIn: {
-          '0%': { opacity: 0, transform: 'translateY(20px)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
-        }
-      },
-      transitionTimingFunction: {
-        'elegant': 'cubic-bezier(0.16, 1, 0.3, 1)',
-        'spring-smooth': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'premium': '0 4px 20px -2px rgba(21, 25, 34, 0.05)',
+        'premium-hover': '0 8px 30px -4px rgba(21, 25, 34, 0.1)',
       }
     },
   },

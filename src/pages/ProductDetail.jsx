@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { MagneticButton } from '../components/ui/MagneticButton';
 import { RevealSection } from '../components/ui/RevealSection';
 import { ProductGrid } from '../components/product/ProductGrid';
 import { FloatingWhatsApp } from '../components/action/FloatingWhatsApp';
@@ -34,13 +32,13 @@ export const ProductDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-salem-ivory pt-32 px-6 flex justify-center">
-        <div className="w-full max-w-[1600px] grid grid-cols-1 lg:grid-cols-2 gap-16 animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-salem-beige/5 to-transparent">
-           <div className="aspect-[4/5] bg-salem-beige/20 rounded-sm"></div>
-           <div className="space-y-8 pt-12 lg:pl-12">
-             <div className="h-4 w-32 bg-salem-beige/20 rounded-sm"></div>
-             <div className="h-16 w-3/4 bg-salem-beige/20 rounded-sm"></div>
-             <div className="h-8 w-40 bg-salem-beige/20 rounded-sm"></div>
-             <div className="h-40 w-full bg-salem-beige/20 mt-12 rounded-sm"></div>
+        <div className="w-full max-w-[1280px] grid grid-cols-1 lg:grid-cols-2 gap-12 animate-pulse">
+           <div className="aspect-[4/5] bg-salem-cream"></div>
+           <div className="space-y-6 pt-8">
+             <div className="h-4 w-24 bg-salem-cream"></div>
+             <div className="h-12 w-3/4 bg-salem-cream"></div>
+             <div className="h-6 w-32 bg-salem-cream"></div>
+             <div className="h-24 w-full bg-salem-cream mt-8"></div>
            </div>
         </div>
       </div>
@@ -50,109 +48,104 @@ export const ProductDetail = () => {
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-salem-ivory text-salem-ink px-6 text-center">
-        <h1 className="font-serif text-5xl md:text-7xl mb-8">Pieza inaccesible</h1>
-        <p className="font-sans text-salem-muted font-light max-w-md mx-auto mb-12">La pieza que buscas ya no se encuentra en nuestra colección actual.</p>
-        <MagneticButton href="/catalog" variant="outline">
+        <h1 className="font-serif text-4xl mb-6">Pieza inaccesible</h1>
+        <p className="font-sans text-sm text-salem-muted font-light max-w-sm mx-auto mb-8">
+          La pieza que buscas ya no se encuentra disponible en este momento.
+        </p>
+        <Link to="/catalog" className="px-8 py-3 bg-salem-ink text-white font-sans text-[10px] tracking-widest uppercase hover:bg-salem-gold transition-colors">
           Volver a la Colección
-        </MagneticButton>
+        </Link>
       </div>
     );
   }
 
-  // Use a generic WhatsApp number if none was provided, this can be updated later in config
   const whatsappNumber = "1234567890";
-  const whatsappMsg = `Hola, estoy interesada en la pieza ${product.name} (SKU: ${product.sku || product.id}) de Salem Store.`;
+  const whatsappMsg = `Hola, estoy interesada en la pieza ${product.name} (SKU: ${product.sku || product.id}).`;
 
   return (
-    <div className="bg-salem-ivory min-h-screen pt-24 pb-32 selection:bg-salem-gold/20 selection:text-salem-ink">
+    <div className="bg-salem-ivory min-h-screen pt-24 pb-32">
       <FloatingWhatsApp />
       
       {/* Breadcrumb */}
-      <div className="max-w-[1600px] mx-auto px-6 mb-8 mt-4 hidden md:block">
-        <nav className="font-sans text-[9px] tracking-[0.3em] uppercase text-salem-muted flex gap-3">
-          <Link to="/" className="hover:text-salem-ink transition-colors pressable">Inicio</Link>
+      <div className="max-w-[1280px] mx-auto px-6 py-6 border-b border-salem-ink/5 mb-10">
+        <nav className="font-sans text-[10px] tracking-widest uppercase text-salem-muted flex gap-2">
+          <Link to="/" className="hover:text-salem-ink transition-colors">Inicio</Link>
           <span>/</span>
-          <Link to="/catalog" className="hover:text-salem-ink transition-colors pressable">Colección</Link>
+          <Link to="/catalog" className="hover:text-salem-ink transition-colors">Catálogo</Link>
           <span>/</span>
-          <Link to={`/catalog?category=${encodeURIComponent(product.category)}`} className="hover:text-salem-ink transition-colors pressable">{product.category}</Link>
+          <Link to={`/catalog?category=${encodeURIComponent(product.category)}`} className="hover:text-salem-ink transition-colors">{product.category}</Link>
           <span>/</span>
-          <span className="text-salem-ink">{product.name}</span>
+          <span className="text-salem-ink truncate">{product.name}</span>
         </nav>
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+      {/* Main Product Area (50/50 Split) */}
+      <div className="max-w-[1280px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
         
-        {/* Massive Sticky Image */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.98, y: 24 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-          className="relative lg:sticky lg:top-32 w-full h-[60vh] lg:h-[80vh] group overflow-hidden bg-salem-beige/5 p-1.5 rounded-sm border border-salem-ink/5"
-        >
+        {/* Left: Image (Sticky) */}
+        <div className="relative lg:sticky lg:top-32 w-full bg-salem-cream">
           <ProductImage 
             src={product.image} 
             alt={product.name}
-            aspect="aspect-auto h-full w-full"
-            className="group-hover:scale-[1.03] transition-transform duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]"
+            aspect="aspect-[4/5] w-full"
           />
-        </motion.div>
+        </div>
 
-        {/* Product Info */}
-        <div className="flex flex-col lg:pl-8 lg:pt-12 pb-32">
-          <RevealSection delay={0.1} blur={false}>
-            <span className="inline-block font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6 border border-salem-gold/30 px-4 py-1.5 rounded-full">
+        {/* Right: Info Panel */}
+        <div className="flex flex-col lg:py-10">
+          <RevealSection blur={false}>
+            <span className="inline-block font-sans text-[10px] tracking-widest uppercase text-salem-gold mb-4">
               {product.category}
             </span>
-            <h1 className="font-serif text-4xl md:text-6xl text-salem-ink mb-8 leading-[1.1] tracking-tight text-balance">
+            <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-salem-ink mb-6 leading-[1.1] tracking-tight">
               {product.name}
             </h1>
             
-            <div className="flex items-end gap-4 mb-10 font-sans tracking-wide">
+            <div className="flex items-end gap-4 mb-8 font-sans">
               {product.salePrice ? (
                 <>
-                  <span className="text-3xl text-salem-gold font-medium">${product.salePrice.toLocaleString()}</span>
-                  <span className="text-salem-muted line-through text-lg mb-1">${product.price.toLocaleString()}</span>
+                  <span className="text-2xl text-salem-gold font-medium">${product.salePrice.toLocaleString()}</span>
+                  <span className="text-salem-muted line-through text-lg mb-0.5">${product.price.toLocaleString()}</span>
                 </>
               ) : (
-                <span className="text-3xl text-salem-ink">${product.price.toLocaleString()}</span>
+                <span className="text-2xl text-salem-ink">${product.price.toLocaleString()}</span>
               )}
             </div>
-          </RevealSection>
-          
-          <RevealSection delay={0.2} blur={false}>
-            <div className="w-16 h-px bg-salem-gold mb-10"></div>
+            
+            <div className="w-full h-px bg-salem-ink/10 mb-8"></div>
           </RevealSection>
 
-          <RevealSection delay={0.3} blur={false}>
-            <p className="font-sans text-sm md:text-base text-salem-muted font-light leading-relaxed mb-16 text-balance max-w-lg">
+          <RevealSection delay={0.1} blur={false}>
+            <p className="font-sans text-sm text-salem-muted font-light leading-relaxed mb-10 max-w-md text-balance">
               {product.description || "Una pieza exquisita diseñada con minuciosos detalles. Creada para destacar tu estilo en cualquier ocasión, aportando un toque de elegancia atemporal."}
             </p>
           </RevealSection>
 
-          <RevealSection delay={0.4} blur={false}>
-            <div className="flex flex-col gap-8 mb-16 max-w-sm">
-              <MagneticButton 
+          <RevealSection delay={0.2} blur={false}>
+            <div className="flex flex-col gap-4 mb-12">
+              <a 
                 href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsg)}`}
-                variant="primary"
-                className="w-full"
-                showArrow
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-3 bg-salem-ink text-white py-4 font-sans text-xs tracking-widest uppercase hover:bg-salem-gold transition-colors duration-300"
               >
-                Solicitar por WhatsApp
-              </MagneticButton>
+                Comprar vía WhatsApp
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
             </div>
           </RevealSection>
 
-          <RevealSection delay={0.5} blur={false}>
-            <div className="border-t border-salem-ink/5 pt-10">
-              <h3 className="font-sans text-[10px] tracking-[0.2em] uppercase text-salem-ink mb-6">Detalles Técnicos</h3>
-              <ul className="flex flex-col gap-4 font-sans text-xs tracking-widest uppercase text-salem-muted font-light">
-                <li className="flex items-center justify-between border-b border-salem-ink/5 pb-2">
-                  <span>Disponibilidad</span>
-                  <span className="text-salem-ink font-medium">{product.stock > 0 ? 'En Stock' : 'Agotado'}</span>
+          <RevealSection delay={0.3} blur={false}>
+            <div className="border border-salem-ink/10 p-6 bg-salem-cream/30">
+              <h3 className="font-sans text-[10px] tracking-widest uppercase text-salem-ink mb-4 font-medium">Especificaciones</h3>
+              <ul className="flex flex-col gap-3 font-sans text-xs text-salem-muted font-light">
+                <li className="flex justify-between">
+                  <span>Disponibilidad:</span>
+                  <span className="text-salem-ink">{product.stock > 0 ? 'En Stock' : 'Agotado'}</span>
                 </li>
-                <li className="flex items-center justify-between border-b border-salem-ink/5 pb-2">
-                  <span>SKU</span>
-                  <span className="text-salem-ink font-medium">{product.sku || product.id}</span>
+                <li className="flex justify-between">
+                  <span>SKU:</span>
+                  <span className="text-salem-ink">{product.sku || product.id}</span>
                 </li>
               </ul>
             </div>
@@ -162,14 +155,13 @@ export const ProductDetail = () => {
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <div className="mt-20 border-t border-salem-gold/10 pt-32 px-6">
-          <div className="max-w-[1600px] mx-auto">
-            <RevealSection className="text-center mb-20">
-              <p className="font-sans text-[10px] tracking-[0.3em] uppercase text-salem-gold mb-6">Complementos</p>
-              <h3 className="font-serif text-4xl md:text-5xl text-salem-ink">Piezas Similares</h3>
+        <div className="mt-24 border-t border-salem-ink/5 pt-20 px-6">
+          <div className="max-w-[1400px] mx-auto">
+            <RevealSection className="mb-12 text-center">
+              <h3 className="font-serif text-3xl text-salem-ink">También te podría gustar</h3>
             </RevealSection>
             
-            <ProductGrid products={relatedProducts} loading={loading} />
+            <ProductGrid products={relatedProducts} loading={loading} columns={4} />
           </div>
         </div>
       )}
