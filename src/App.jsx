@@ -1,52 +1,52 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { Layout } from './components/layout/Layout';
-import Home from './pages/Home';
-import { CartProvider } from './context/CartContext';
+import { AnimatePresence } from 'framer-motion';
 
-// Lazy load secondary routes to improve initial load performance
-const Catalog = React.lazy(() => import('./pages/Catalog'));
-const ProductDetail = React.lazy(() => import('./pages/ProductDetail'));
-const AdminImport = React.lazy(() => import('./pages/AdminImport'));
+import { SalemHeader } from './components/layout/SalemHeader';
+import { SalemFooter } from './components/layout/SalemFooter';
+import { SalemWhatsAppCTA } from './components/action/SalemWhatsAppCTA';
+
+import { Home } from './pages/Home';
+import { Catalog } from './pages/Catalog';
+import { ProductDetail } from './pages/ProductDetail';
+
+const Layout = ({ children }) => {
+  return (
+    <div className="min-h-screen bg-cream flex flex-col font-sans selection:bg-gold/20 text-carbon">
+      <SalemHeader />
+      <main className="flex-grow">
+        {children}
+      </main>
+      <SalemFooter />
+      <SalemWhatsAppCTA />
+    </div>
+  );
+};
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Home />} />
+        <Route path="/catalog" element={<Catalog />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
 
 function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
-        <CartProvider>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route 
-                path="catalog" 
-                element={
-                  <Suspense fallback={<div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>}>
-                    <Catalog />
-                  </Suspense>
-                } 
-              />
-              <Route 
-                path="product/:slug" 
-                element={
-                  <Suspense fallback={<div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div></div>}>
-                    <ProductDetail />
-                  </Suspense>
-                } 
-              />
-              <Route 
-                path="admin-import" 
-                element={
-                  <Suspense fallback={<div>Cargando administrador...</div>}>
-                    <AdminImport />
-                  </Suspense>
-                } 
-              />
-            </Route>
-          </Routes>
-        </CartProvider>
+        <Layout>
+          <AnimatedRoutes />
+        </Layout>
       </BrowserRouter>
       <Analytics />
       <SpeedInsights />
