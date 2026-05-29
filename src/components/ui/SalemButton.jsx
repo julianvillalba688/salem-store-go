@@ -12,13 +12,13 @@ export const SalemButton = ({
   icon,
   ...props 
 }) => {
-  const baseStyles = "inline-flex items-center justify-center px-8 py-3 text-sm tracking-widest uppercase transition-all duration-300 font-sans font-medium";
+  const baseStyles = "inline-flex items-center justify-center px-8 py-3 md:px-10 md:py-4 text-[10px] tracking-[0.2em] uppercase transition-all duration-500 font-sans font-medium";
   
   const variants = {
-    primary: "bg-carbon text-white hover:bg-carbon-light",
-    secondary: "bg-gold text-white hover:bg-gold-dark shadow-gold-glow",
-    outline: "border border-carbon text-carbon hover:bg-carbon hover:text-white",
-    ghost: "text-carbon hover:text-gold"
+    primary: "bg-salem-black text-white hover:bg-salem-black-soft",
+    secondary: "bg-salem-gold text-white hover:bg-salem-gold-light shadow-gold-glow",
+    outline: "border border-salem-black text-salem-black hover:bg-salem-black hover:text-white",
+    ghost: "text-salem-black hover:text-salem-gold"
   };
 
   const Component = href ? 'a' : motion.button;

@@ -5,6 +5,18 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --salem-black: #10141B;
+    --salem-black-soft: #181C24;
+    --salem-gold: #B99A55;
+    --salem-gold-light: #D7C18A;
+    --salem-cream: #F8F4EA;
+    --salem-ivory: #FFFDF7;
+    --salem-beige: #E8DDC8;
+    --salem-nude: #D9BFA3;
+    --salem-muted: #6F6A61;
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
@@ -12,7 +24,7 @@
   }
   
   body {
-    @apply bg-cream text-carbon font-sans;
+    @apply bg-salem-cream text-salem-black font-sans;
     /* Soft noise texture for premium feel */
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
   }
@@ -22,7 +34,7 @@
   }
 
   ::selection {
-    @apply bg-gold/20 text-carbon;
+    @apply bg-salem-gold/20 text-salem-black;
   }
 }
 
@@ -51,9 +63,9 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-editorial/30 rounded-full;
+  @apply bg-salem-muted/30 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gold/50;
+  @apply bg-salem-gold/50;
 }
